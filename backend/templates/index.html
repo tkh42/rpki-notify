@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --header-color: #2c3e50;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: rgba(0, 0, 0, 0.12);
+            --table-header-bg: #f8f8f8;
+            --table-border-color: #e0e0e0;
+            --table-even-row-bg: #fdfdfd;
+            --table-hover-bg: #f0f0f0;
+            --form-border-color: #ccc;
+            --form-focus-border: #3498db;
+            --form-focus-shadow: rgba(52, 152, 219, 0.2);
+            --button-bg: #3498db;
+            --button-hover-bg: #2980b9;
+            --error-color: #e74c3c;
+            --modal-overlay-bg: rgba(0,0,0,0.6);
+            --modal-shadow: rgba(0,0,0,0.3);
+            --close-button-color: #aaa;
+            --close-button-hover-color: #333;
+            --navbar-bg: #ffffff;
+            --navbar-text: #2c3e50;
+            --navbar-button-bg: #3498db;
+            --navbar-button-hover-bg: #2980b9;
+            --icon-color: #555;
+            --icon-hover-color: #3498db;
+            /* Chart colors (light mode) */
+            --chart-color-1: #4CAF50;
+            --chart-color-2: #FFC107;
+            --chart-color-3: #F44336;
+            --chart-color-4: #2196F3;
+            --chart-text-color: #333;
+            /* Scrollbar colors (light mode) */
+            --scrollbar-thumb: #888;
+            --scrollbar-track: #f1f1f1;
+        }
+
+        /* Dark Mode variables */
+        body.dark-mode {
+            --bg-color: #2c3e50;
+            --text-color: #ecf0f1;
+            --header-color: #ecf0f1;
+            --card-bg: #34495e;
+            --card-shadow: rgba(0, 0, 0, 0.2);
+            --card-hover-shadow: rgba(0, 0, 0, 0.3);
+            --table-header-bg: #3b546d;
+            --table-border-color: #4a6a8a;
+            --table-even-row-bg: #3d5975;
+            --table-hover-bg: #4a6a8a;
+            --form-border-color: #555;
+            --form-focus-border: #8fd2f9;
+            --form-focus-shadow: rgba(143, 210, 249, 0.3);
+            --button-bg: #3498db;
+            --button-hover-bg: #2980b9;
+            --error-color: #e74c3c;
+            --modal-overlay-bg: rgba(0,0,0,0.8);
+            --modal-shadow: rgba(0,0,0,0.5);
+            --close-button-color: #ccc;
+            --close-button-hover-color: #eee;
+            --navbar-bg: #2c3e50;
+            --navbar-text: #ecf0f1;
+            --navbar-button-bg: #3498db;
+            --navbar-button-hover-bg: #2980b9;
+            --icon-color: #ecf0f1;
+            --icon-hover-color: #8fd2f9;
+            /* Chart colors (dark mode) */
+            --chart-color-1: #66BB6A; /* Lighter green */
+            --chart-color-2: #FFD54F; /* Lighter yellow */
+            --chart-color-3: #EF5350; /* Lighter red */
+            --chart-color-4: #64B5F6; /* Lighter blue */
+            --chart-text-color: #ecf0f1;
+            /* Scrollbar colors (dark mode) */
+            --scrollbar-thumb: #555;
+            --scrollbar-track: #3b546d;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0; /* Remove body padding here, navbar handles it */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--navbar-bg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .navbar-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--navbar-text);
+            flex-grow: 1; /* Allows title to take up available space */
+        }
+
+        .navbar-buttons {
+            display: flex;
+            gap: 15px; /* Space between buttons */
+            align-items: center;
+        }
+
+        .navbar-button {
+            background-color: var(--navbar-button-bg);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .navbar-button:hover {
+            background-color: var(--navbar-button-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .navbar-button:active {
+            transform: translateY(0);
+        }
+
+        /* Theme toggle button */
+        .theme-toggle-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex; /* For SVG centering */
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%; /* Make it circular */
+            transition: background-color 0.2s ease;
+        }
+
+        .theme-toggle-button:hover {
+            background-color: rgba(128, 128, 128, 0.1); /* Subtle hover effect */
+        }
+
+        .theme-toggle-button svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--icon-color); /* Use CSS variable for icon color */
+            transition: fill 0.3s ease;
+        }
+
+        .theme-toggle-button:hover svg {
+             fill: var(--icon-hover-color);
+        }
+
+        /* Main content styling, now inside a main tag */
+        main {
+            padding: 0 20px; /* Add padding to main content */
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--header-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        /* New Summary Tile */
+        .summary-tile {
+            width: calc(100% - 40px); /* Adjust for main padding */
+            max-width: 100%; /* Ensure it takes full width */
+            margin: 0 auto 10px auto; /* Center and add bottom margin */
+            display: flex;
+            justify-content: space-around; /* Distribute items */
+            align-items: center;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--card-shadow);
+            padding: 15px; /* Slightly more padding */
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+        }
+        .summary-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px var(--card-hover-shadow);
+        }
+
+        .summary-tile h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--header-color);
+            font-weight: 500;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .summary-tile p {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .summary-tile .summary-item {
+            text-align: center;
+            flex: 1; /* Allow items to grow */
+            min-width: 150px; /* Prevent shrinking too much */
+        }
+
+        .summary-tile .summary-item:not(:last-child) {
+            border-right: 1px solid var(--table-border-color); /* Separator */
+            padding-right: 20px;
+            margin-right: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Loading icon */
+        .loading-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-icon {
+            width: 100%;
+            height: 100%;
+            fill: var(--form-focus-border); /* Use a blue color, matching buttons */
+            animation: spin 1.5s linear infinite; /* Spin animation */
+            display: none; /* Hidden by default, shown by JS */
+            transition: fill 0.3s ease;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Specific styling for last updated text */
+        .last-updated {
+            font-size: 0.9em !important; /* Override default p font-size */
+            font-weight: 400 !important;
+            color: var(--text-color) !important;
+            margin-top: 5px;
+            transition: color 0.3s ease;
+        }
+
+
+        /* New Top Info Container */
+        .top-info-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .info-tile {
+            flex: 1;
+            min-width: 300px; /* Adjust as needed */
+            background-color: var(--card-bg);
+            border-radius: 2px;
+            box-shadow: 0 4px 12px var(--card-shadow);
+            padding: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+        }
+
+        .info-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px var(--card-hover-shadow);
+        }
+
+        .info-tile h2 {
+            color: var(--header-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 400;
+            border-bottom: 2px solid var(--table-border-color);
+            padding-bottom: 10px;
+            text-align: center;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Chart specific styling */
+        .chart-container {
+            width: 100%;
+            max-width: 300px; /* Limit chart size */
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Error Log specific styling */
+        .error-log-container {
+            max-height: 300px; /* Set a max height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid var(--table-border-color); /* Subtle border for log */
+            border-radius: 6px;
+            padding: 10px;
+            background-color: var(--card-bg); /* Match card background */
+            /* The fix for empty space */
+            white-space: normal; /* Reset this if inherited from font-size:0 context */
+            /* End fix */
+            color: var(--text-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Custom Scrollbar for Webkit browsers (Chrome, Safari) */
+        .error-log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .error-log-container::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 10px;
+        }
+
+        .error-log-container::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 10px;
+        }
+
+        .error-log-container::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Slightly darker on hover */
+        }
+
+
+        .log-entry {
+            margin-bottom: 2px; /* Adjusted to reduce space */
+            padding: 1px 0; /* Adjusted to reduce space */
+            border-bottom: 1px dashed rgba(0,0,0,0.1); /* Subtle separator */
+            transition: border-color 0.3s ease;
+
+            /* Re-apply font properties here */
+            font-family: monospace; /* Monospace font for logs */
+            font-size: 0.9em; /* Restore font size for log entries */
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+            display: block; /* Ensure it behaves as a block element */
+        }
+        body.dark-mode .log-entry {
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .log-entry.error {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+        .log-entry.warn {
+            color: #FFC107; /* Orange */
+        }
+        .log-entry.info {
+            color: #2196F3; /* Blue */
+        }
+
+
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: space-around; /* Distribute space evenly */
+            gap: 20px; /* Space between flex items */
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: none; /* Remove individual cell borders */
+            border-bottom: 1px solid var(--table-border-color); /* Add bottom border for rows */
+            padding: 12px 15px;
+            text-align: left;
+            transition: border-color 0.3s ease;
+        }
+
+        th {
+            background-color: var(--table-header-bg); /* Lighter header background */
+            color: var(--text-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-even-row-bg); /* Slightly different background for even rows */
+        }
+
+        tr:hover {
+            background-color: var(--table-hover-bg); /* Highlight row on hover */
+            cursor: pointer;
+        }
+
+        /* Modal (Overlay) Styles */
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: var(--modal-overlay-bg); /* Black w/ opacity */
+            display: flex; /* Use flexbox for centering */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            opacity: 0; /* Start with opacity 0 for fade-in effect */
+            visibility: hidden; /* Hide content from screen readers when not visible */
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto; /* For older browsers/fallback, though flex handles it */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px var(--modal-shadow); /* Stronger shadow for pop-up */
+            position: relative; /* Needed for close button positioning */
+            width: 90%; /* Responsive width */
+            max-width: 550px; /* Maximum width */
+            animation: fadeInScale 0.3s ease-out; /* Animation for appearance */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Animation for modal content */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .close-button {
+            color: var(--close-button-color);
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--close-button-hover-color);
+            text-decoration: none;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: var(--header-color);
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        /* Form styles inside the modal (reusing existing styles) */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--form-border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: var(--card-bg); /* Ensure input background changes */
+            color: var(--text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus {
+            border-color: var(--form-focus-border);
+            box-shadow: 0 0 0 3px var(--form-focus-shadow);
+            outline: none;
+        }
+
+        .form-group button[type="submit"] { /* Target the submit button specifically */
+            background-color: var(--button-bg);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .form-group button[type="submit"]:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .form-group button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .errorlist {
+            color: var(--error-color);
+            list-style-type: none;
+            padding: 0;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            .navbar-title {
+                font-size: 1.5em;
+            }
+            .navbar-buttons {
+                gap: 10px;
+            }
+            .navbar-button {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            .theme-toggle-button svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .summary-tile {
+                flex-direction: column; /* Stack items vertically */
+                align-items: flex-start; /* Align text to left */
+                padding: 20px;
+                width: calc(100% - 40px); /* Adjust for main padding */
+            }
+            .summary-tile .summary-item {
+                width: 100%; /* Take full width when stacked */
+                text-align: left; /* Align text to left */
+                margin-bottom: 15px;
+                padding-bottom: 15px;
+            }
+            .summary-tile .summary-item:not(:last-child) {
+                border-right: none;
+                border-bottom: 1px solid var(--table-border-color); /* Bottom separator */
+                padding-right: 0;
+                margin-right: 0;
+            }
+
+            .top-info-container, .container {
+                flex-direction: column; /* Stack tiles vertically on medium screens */
+                align-items: center; /* Center items when stacked */
+            }
+
+            .info-tile {
+                width: 90%; /* Take up more width when stacked */
+                margin-bottom: 20px;
+            }
+            .error-log-container {
+                max-height: 200px; /* Adjust height for smaller screens */
+            }
+        }
+
+        @media (max-width: 576px) {
+            main {
+                padding: 0 10px;
+            }
+            .navbar {
+                flex-direction: column; /* Stack navbar items vertically */
+                align-items: flex-start;
+                padding: 10px 15px;
+            }
+            .navbar-title {
+                margin-bottom: 10px;
+                font-size: 1.6em;
+            }
+            .navbar-buttons {
+                width: 100%;
+                justify-content: space-between; /* Spread buttons out */
+                gap: 5px;
+            }
+            .navbar-button {
+                flex-grow: 1; /* Allow buttons to expand */
+                font-size: 0.85em;
+                padding: 8px 10px;
+            }
+            .summary-tile {
+                padding: 15px;
+                width: calc(100% - 30px); /* Adjust for main padding */
+            }
+            .summary-tile .summary-item p {
+                font-size: 1.4em;
+            }
+            .info-tile {
+                width: 100%; /* Full width on small screens */
+                padding: 15px;
+            }
+            .modal-content {
+                padding: 20px; /* Reduce padding on small screens */
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-title">
+            rpki-notify
+        </div>
+        <div class="navbar-buttons">
+            <button class="navbar-button" onclick="openRegistrationModal()">Notify me!</button>
+            <button class="navbar-button">Feedback</button>
+            <button class="theme-toggle-button" id="themeToggle">
+                <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <div class="summary-tile">
+            <div class="summary-item">
+                <h3>Total Objects Crawled</h3>
+                <p id="totalObjects">1,234,567</p>
+            </div>
+            <div class="summary-item">
+                <h3>Repositories Active</h3>
+                <p id="reposActive">42</p>
+            </div>
+            <div class="summary-item loading-status">
+                <div class="loading-icon-wrapper">
+                    <svg id="loadingIcon" class="loading-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zM15 10a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm-6 0a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm8-1h-2v2h2V9zm-8 0H7v2h2V9zM12 4a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm0 16a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"></path>
+                    </svg>
+                </div>
+                <p class="last-updated">Last Updated: <span id="lastUpdated"></span></p>
+            </div>
+        </div>
+
+        <div class="top-info-container">
+            <div class="info-tile">
+                <h2>Inconsistent objects</h2>
+                <div class="chart-container">
+                    <canvas id="objectChart"></canvas>
+                </div>
+            </div>
+
+            <div class="info-tile">
+                <h2>Recent updates</h2>
+                <div class="error-log-container" id="errorLog">
+                    <div class="log-entry info">[2025-06-10 16:50:01] INFO: User 'Alice' logged in successfully.</div>
+                    <div class="log-entry warn">[2025-06-10 16:50:15] WARN: Disk space on '/dev/sda1' is 85% full.</div>
+                    <div class="log-entry error">[2025-06-10 16:50:30] ERROR: Database connection failed. Retrying...</div>
+                    <div class="log-entry info">[2025-06-10 16:50:45] INFO: System backup initiated.</div>
+                    <div class="log-entry error">[2025-06-10 16:51:02] ERROR: API endpoint '/api/data' returned 500 Internal Server Error.</div>
+                    <div class="log-entry info">[2025-06-10 16:51:10] INFO: New user 'Bob' registered.</div>
+                    <div class="log-entry warn">[2025-06-10 16:51:25] WARN: High CPU usage detected on server 'web-01'.</div>
+                    <div class="log-entry info">[2025-06-10 16:51:40] INFO: Cache cleared successfully.</div>
+                    <div class="log-entry error">[2025-06-10 16:51:55] ERROR: Unhandled exception in 'process_data' function.</div>
+                    <div class="log-entry warn">[2025-06-10 16:52:00] WARN: Email service temporary unavailable.</div>
+                    <div class="log-entry info">[2025-06-10 16:52:05] INFO: Service 'auth-service' restarted.</div>
+                    <div class="log-entry error">[2025-06-10 16:52:20] ERROR: File system corruption detected on '/var/log'.</div>
+                    <div class="log-entry info">[2025-06-10 16:52:30] INFO: Scheduled task 'report_gen' completed.</div>
+                    <div class="log-entry warn">[2025-06-10 16:52:45] WARN: Low memory alert on 'db-server-02'.</div>
+                    <div class="log-entry error">[2025-06-10 16:53:00] ERROR: Network connectivity lost to 'external-api.com'.</div>
+                    <div class="log-entry info">[2025-06-10 16:53:15] INFO: User 'Charlie' uploaded a new document.</div>
+                    <div class="log-entry warn">[2025-06-10 16:53:30] WARN: Database query took longer than 500ms.</div>
+                    <div class="log-entry error">[2025-06-10 16:53:45] ERROR: Authentication token expired for background job.</div>
+                    <div class="log-entry info">[2025-06-10 16:53:50] INFO: System health check passed.</div>
+                    <div class="log-entry warn">[2025-06-10 16:54:05] WARN: High number of open file descriptors.</div>
+                </div>
+            </div>
+
+            <div class="info-tile">
+                <h2>Availability</h2>
+                <div class="chart-container">
+                    <canvas id="availabilityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="info-tile">
+                <h2>Inconsistencies</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inconsistencies %}
+                        <tr>
+                            <td>{{ item.detail }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-tile">
+                <h2>Errors</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in errors %}
+                        <tr>
+                            <td>{{ item.message }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-tile">
+                <h2>Reachability</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in reachability_statuses %}
+                        <tr>
+                            <td>{{ item.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="registrationModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeRegistrationModal()">&times;</span>
+            <h2>Register for Updates</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.name.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <button type="submit">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- Modal Logic (retained) ---
+        var modal = document.getElementById("registrationModal");
+
+        function openRegistrationModal() {
+            modal.classList.add("show");
+        }
+
+        function closeRegistrationModal() {
+            modal.classList.remove("show");
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeRegistrationModal();
+            }
+        }
+
+        // --- Dark Mode Logic ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+
+        // Function to set the theme
+        function setTheme(isDarkMode) {
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                themeIcon.innerHTML = `
+                    <path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.14 7.14a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM3 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm3.086 5.561a.75.75 0 0 1-1.061 0l-1.06-1.061a.75.75 0 0 1 1.06-1.06l1.061 1.06a.75.75 0 0 1 0 1.061ZM12 18a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm5.561-3.086a.75.75 0 0 1 0 1.06l-1.061 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM21 12a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm-3.086-5.561a.75.75 0 0 1 1.061 0l1.06 1.061a.75.75 0 1 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.061ZM12 6a6 6 0 1 1 0 12A6 6 0 0 1 12 6Z" clip-rule="evenodd" fill-rule="evenodd" />
+                `; // Sun icon
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                themeIcon.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                `; // Moon icon
+                localStorage.setItem('theme', 'light');
+            }
+            // Update charts immediately on theme change
+            updateChartsTheme();
+        }
+
+        // Chart instances (global so we can update them)
+        let objectChart, availabilityChart;
+
+        // Function to create/update charts based on theme
+        function updateChartsTheme() {
+            // Get colors dynamically from CSS variables
+            const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color').trim();
+            const chartColors = [
+                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-1').trim(),
+                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-2').trim(),
+                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-3').trim(),
+                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-4').trim()
+            ];
+
+            // Destroy existing charts if they exist
+            if (objectChart) objectChart.destroy();
+            if (availabilityChart) availabilityChart.destroy();
+
+            // Object Chart
+            const ctx1 = document.getElementById('objectChart').getContext('2d');
+            objectChart = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: ['Valid', 'Inconsistent', 'Error'],
+                    datasets: [{
+                        data: [75, 15, 10], // Dummy data
+                        backgroundColor: [
+                            chartColors[0], /* Operational (Green) */
+                            chartColors[1], /* Degraded (Yellow) */
+                            chartColors[2]  /* Outage (Red) */
+                        ],
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(), // Border matches card background
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: chartTextColor // Update legend text color
+                            }
+                        },
+                        title: {
+                            display: false, // Title is in the info-tile H2
+                        }
+                    }
+                }
+            });
+
+            // Availability Chart
+            const ctx2 = document.getElementById('availabilityChart').getContext('2d');
+            availabilityChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Available', 'Unreachable'],
+                    datasets: [{
+                        data: [90, 10], // Dummy data
+                        backgroundColor: [
+                            chartColors[0],
+                            chartColors[2]
+                        ],
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(), // Border matches card background
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: chartTextColor // Update legend text color
+                            }
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // --- Summary Tile Logic ---
+        const loadingIcon = document.getElementById('loadingIcon');
+        const lastUpdatedSpan = document.getElementById('lastUpdated');
+        const totalObjectsSpan = document.getElementById('totalObjects');
+        const reposActiveSpan = document.getElementById('reposActive');
+
+        function updateLastUpdated() {
+            const now = new Date();
+            // Using toLocaleString with options for more flexible formatting
+            const options = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false, // 24-hour format
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                timeZoneName: 'short' // e.g., CEST, CDT
+            };
+            // Format for Frankfurt, Hessen, Germany (CEST time zone)
+            const formattedDate = now.toLocaleString('en-US', { timeZone: 'Europe/Berlin', ...options });
+            lastUpdatedSpan.textContent = formattedDate;
+        }
+
+        function toggleLoadingIcon(show) {
+            if (show) {
+                loadingIcon.style.display = 'block';
+            } else {
+                loadingIcon.style.display = 'none';
+            }
+        }
+
+        // Dummy data update simulation
+        let totalObjects = 1234567;
+        let reposActive = 42;
+
+        function simulateDataUpdate() {
+            toggleLoadingIcon(true); // Show loading icon
+
+            setTimeout(() => {
+                // Simulate fetching new data
+                totalObjects += Math.floor(Math.random() * 1000) + 100;
+                reposActive = Math.floor(Math.random() * 5) + 40; // Keeps it around 40-45
+
+                totalObjectsSpan.textContent = totalObjects.toLocaleString('en-US'); // Format with commas
+                reposActiveSpan.textContent = reposActive.toLocaleString('en-US');
+
+                updateLastUpdated(); // Update timestamp after data is "loaded"
+                toggleLoadingIcon(false); // Hide loading icon
+            }, 1500); // Simulate 1.5 seconds loading time
+        }
+
+
+        // --- Initial Load Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                setTheme(true);
+            } else {
+                setTheme(false); // Default to light if no preference or 'light'
+            }
+            // Charts are now initialized/updated by setTheme
+            // Initial update for summary tile
+            updateLastUpdated(); // Set initial last updated time
+            simulateDataUpdate(); // Simulate first data load after initial page load
+
+            // Periodically simulate data updates for summary tile
+            setInterval(simulateDataUpdate, 10000); // Every 10 seconds
+        });
+
+        // Toggle theme on button click
+        themeToggleBtn.addEventListener('click', () => {
+            setTheme(!body.classList.contains('dark-mode'));
+        });
+    </script>
+
+</body>
+</html>
