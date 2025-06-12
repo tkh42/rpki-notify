@@ -701,7 +701,7 @@
             num_total_vrps: {{ latest_report.num_total_vrps|default:0 }},
             reachable_repos: {{ reachable_repos_count|default:0 }},
             unreachable_repos: {{ unreachable_repos_count|default:0 }},
-            vrps_per_rp: JSON.parse('{{ vrps_per_rp|safe }}'.replaceAll("'", '"'))
+            vrps_per_rp: {{ vrps_per_rp }}
         };
         
         function updateChartsTheme() {
