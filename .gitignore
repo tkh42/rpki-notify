@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Django-specific stuff
+*.sqlite3
+
+# Virtual environments
+env/
+venv/
+migrations/
+
+# Static files
+static/
+
+# VSCode / IDEs (optional)
+.vscode/
+.idea/
+
+# Mac system files (optional)
+.DS_Store
+
+# Git ignore itself (if you ever don't want it tracked)
+!.gitignore
+

@@ -1,30 +1,16 @@
 # myapp/views.py
 import uuid
-from .models import Inconsistency, Error, Reachability
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.shortcuts import render, redirect
-from .models import Inconsistency, Error, Reachability, RegisteredUser
 from .forms import RegistrationForm
 
 
-def get_inconsistencies():
-    return Inconsistency.objects.all()
-
-
-def get_errors():
-    return Error.objects.all()  
-
-
-def get_reachability_statuses():
-    return Reachability.objects.all()
-
-
 def index(request):
-    inconsistencies = get_inconsistencies()
-    errors = get_errors()
-    reachability_statuses = get_reachability_statuses()
+    inconsistencies = [] 
+    errors = []
+    reachability_statuses = []
 
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
