@@ -60,7 +60,8 @@ def index(request):
             'inconsistencies': latest_report.inconsistencies.all(),
             'error_messages': common_errors,
             'repositories': latest_report.repositories.all(),
-            'vrps_per_rp': list(latest_report.relying_parties.all().values('name', 'num_vrps')),
+            'rp_names': list(latest_report.relying_parties.all().values_list("name", flat=True)),
+            'vrps_per_rp': list(latest_report.relying_parties.all().values_list("num_vrps", flat=True)),
             'rp_logs_initial': rp_logs_initial,
             'rp_logs_counts': {rp.name: rp.rp_logs.count() for rp in latest_report.relying_parties.all()},
             'ghostbusters_count': latest_report.ghostbusters.count(),
@@ -70,7 +71,7 @@ def index(request):
             'reachable_repos_count': latest_report.repositories.filter(reachable=True).count(),
             'unreachable_repos_count': latest_report.repositories.filter(reachable=False).count(),
         })
-
+    
     return render(request, 'index.html', context)
 
 

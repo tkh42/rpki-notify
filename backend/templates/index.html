@@ -701,8 +701,9 @@
             num_total_vrps: {{ latest_report.num_total_vrps|default:0 }},
             reachable_repos: {{ reachable_repos_count|default:0 }},
             unreachable_repos: {{ unreachable_repos_count|default:0 }},
-            vrps_per_rp: {{ vrps_per_rp }}
-        };
+	    rp_names: {{ rp_names|safe }},
+            vrps_per_rp: {{ vrps_per_rp|safe }}
+	};
         
         function updateChartsTheme() {
             const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color').trim();
@@ -752,10 +753,10 @@
             vrpsPerRpChart = new Chart(document.getElementById('vrpsPerRpChart').getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: chartData.vrps_per_rp.map(item => item.name),
+                    labels: chartData.rp_names,
                     datasets: [{
                         label: 'VRPs',
-                        data: chartData.vrps_per_rp.map(item => item.num_vrps),
+                        data: chartData.vrps_per_rp,
                         backgroundColor: chartColors.blue,
                     }]
                 },

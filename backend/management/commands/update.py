@@ -63,6 +63,7 @@ class Command(BaseCommand):
             
             for message, count in error_msg_list:
                 ErrorMessage.objects.create(
+                        report=report_obj,
                         relying_party=rp,
                         message=message,
                         count=count
@@ -70,6 +71,7 @@ class Command(BaseCommand):
 
         for repo in report["reachable_repos"]:
             Repository.objects.create(
+                report=report_obj,
                 uri=repo,
                 reachable=True,
                 num_affected_vrps=0
@@ -77,6 +79,7 @@ class Command(BaseCommand):
 
         for repo in report["unreachable_repos"].keys():
             repo_obj = Repository.objects.create(
+                report=report_obj,
                 uri=repo,
                 reachable=False,
                 num_affected_vrps=report["unreachable_repos"][repo][0]
@@ -115,4 +118,3 @@ class Command(BaseCommand):
                         relying_party=rp,
                         vrp=difference[0]
                 )
-
