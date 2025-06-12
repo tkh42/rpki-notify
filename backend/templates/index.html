@@ -312,7 +312,53 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 200px; /* Set a fixed height for the chart container */
         }
+
+        /* Tabs styling */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .tab-button {
+            background-color: var(--table-header-bg);
+            color: var(--text-color);
+            border: 1px solid var(--table-border-color);
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .tab-button:first-child {
+            border-top-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+        }
+
+        .tab-button:last-child {
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+
+        .tab-button.active {
+            background-color: var(--button-bg);
+            color: white;
+            border-color: var(--button-bg);
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: var(--table-hover-bg);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
 
         /* Error Log specific styling */
         .error-log-container {
@@ -673,12 +719,16 @@
     <main>
         <div class="summary-tile">
             <div class="summary-item">
-                <h3>Total Objects Crawled</h3>
-                <p id="totalObjects">1,234,567</p>
+                <h3>Total Objects</h3>
+                <p id="totalObjects">{{ latest_report.num_objects|default:"N/A" }}</p>
             </div>
             <div class="summary-item">
-                <h3>Repositories Active</h3>
-                <p id="reposActive">42</p>
+                <h3>Max RP Exec Time (ms)</h3>
+                <p id="maxRpExecTime">{{ latest_report.max_rp_exec_time|default:"N/A" }}</p>
+            </div>
+            <div class="summary-item">
+                <h3>Crawler Exec Time (ms)</h3>
+                <p id="crawlerExecTime">{{ latest_report.crawler_exec_time|default:"N/A" }}</p>
             </div>
             <div class="summary-item loading-status">
                 <div class="loading-icon-wrapper">
@@ -686,41 +736,37 @@
                         <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zM15 10a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm-6 0a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm8-1h-2v2h2V9zm-8 0H7v2h2V9zM12 4a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm0 16a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"></path>
                     </svg>
                 </div>
-                <p class="last-updated">Last Updated: <span id="lastUpdated"></span></p>
+                <p class="last-updated">Last Updated: <span id="lastUpdated">{{ latest_report.time_stamp|date:"Y-m-d H:i:s T"|default:"N/A" }}</span></p>
             </div>
         </div>
 
         <div class="top-info-container">
             <div class="info-tile">
-                <h2>Inconsistent objects</h2>
-                <div class="chart-container">
-                    <canvas id="objectChart"></canvas>
+                <h2>VRPs and Objects Overview</h2>
+                <div class="tabs">
+                    <button class="tab-button active" onclick="openTab(event, 'vrpsTab')">VRPs</button>
+                    <button class="tab-button" onclick="openTab(event, 'objectsTab')">Objects</button>
+                </div>
+                <div id="vrpsTab" class="tab-content active">
+                    <div class="chart-container">
+                        <canvas id="vrpsChart"></canvas>
+                    </div>
+                </div>
+                <div id="objectsTab" class="tab-content">
+                    <div class="chart-container">
+                        <canvas id="objectsChart"></canvas>
+                    </div>
                 </div>
             </div>
 
             <div class="info-tile">
                 <h2>Recent updates</h2>
                 <div class="error-log-container" id="errorLog">
-                    <div class="log-entry info">[2025-06-10 16:50:01] INFO: User 'Alice' logged in successfully.</div>
-                    <div class="log-entry warn">[2025-06-10 16:50:15] WARN: Disk space on '/dev/sda1' is 85% full.</div>
-                    <div class="log-entry error">[2025-06-10 16:50:30] ERROR: Database connection failed. Retrying...</div>
-                    <div class="log-entry info">[2025-06-10 16:50:45] INFO: System backup initiated.</div>
-                    <div class="log-entry error">[2025-06-10 16:51:02] ERROR: API endpoint '/api/data' returned 500 Internal Server Error.</div>
-                    <div class="log-entry info">[2025-06-10 16:51:10] INFO: New user 'Bob' registered.</div>
-                    <div class="log-entry warn">[2025-06-10 16:51:25] WARN: High CPU usage detected on server 'web-01'.</div>
-                    <div class="log-entry info">[2025-06-10 16:51:40] INFO: Cache cleared successfully.</div>
-                    <div class="log-entry error">[2025-06-10 16:51:55] ERROR: Unhandled exception in 'process_data' function.</div>
-                    <div class="log-entry warn">[2025-06-10 16:52:00] WARN: Email service temporary unavailable.</div>
-                    <div class="log-entry info">[2025-06-10 16:52:05] INFO: Service 'auth-service' restarted.</div>
-                    <div class="log-entry error">[2025-06-10 16:52:20] ERROR: File system corruption detected on '/var/log'.</div>
-                    <div class="log-entry info">[2025-06-10 16:52:30] INFO: Scheduled task 'report_gen' completed.</div>
-                    <div class="log-entry warn">[2025-06-10 16:52:45] WARN: Low memory alert on 'db-server-02'.</div>
-                    <div class="log-entry error">[2025-06-10 16:53:00] ERROR: Network connectivity lost to 'external-api.com'.</div>
-                    <div class="log-entry info">[2025-06-10 16:53:15] INFO: User 'Charlie' uploaded a new document.</div>
-                    <div class="log-entry warn">[2025-06-10 16:53:30] WARN: Database query took longer than 500ms.</div>
-                    <div class="log-entry error">[2025-06-10 16:53:45] ERROR: Authentication token expired for background job.</div>
-                    <div class="log-entry info">[2025-06-10 16:53:50] INFO: System health check passed.</div>
-                    <div class="log-entry warn">[2025-06-10 16:54:05] WARN: High number of open file descriptors.</div>
+                    {% for log_entry in latest_report.logs.all %}
+                        <div class="log-entry info">{{ log_entry.log_entry }}</div>
+                    {% empty %}
+                        <div class="log-entry info">No recent logs available.</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -738,13 +784,19 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Detail</th>
+                            <th>File Name</th>
+                            <th>Log Message</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in inconsistencies %}
                         <tr>
-                            <td>{{ item.detail }}</td>
+                            <td>{{ item.file_name }}</td>
+                            <td>{{ item.log_message }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">No inconsistencies found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -757,12 +809,18 @@
                     <thead>
                         <tr>
                             <th>Message</th>
+                            <th>Count</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in errors %}
+                        {% for error_message in error_messages %}
                         <tr>
-                            <td>{{ item.message }}</td>
+                            <td>{{ error_message.message }}</td>
+                            <td>{{ error_message.count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">No errors found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -774,13 +832,21 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Status</th>
+                            <th>URI</th>
+                            <th>Reachable</th>
+                            <th>Affected VRPs</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in reachability_statuses %}
+                        {% for repo in repositories %}
                         <tr>
-                            <td>{{ item.status }}</td>
+                            <td>{{ repo.uri }}</td>
+                            <td>{{ repo.reachable|yesno:"Yes,No" }}</td>
+                            <td>{{ repo.num_affected_vrps }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3">No repositories found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -867,7 +933,18 @@
         }
 
         // Chart instances (global so we can update them)
-        let objectChart, availabilityChart;
+        let vrpsChart, objectsChart, availabilityChart;
+
+        // Dummy data for charts - replace with actual data from Django context
+        // These values should be passed from your Django view to the template
+        const initialChartData = {
+            num_overlap_vrps: {{ latest_report.num_overlap_vrps|default:0 }},
+            num_diff_vrps: {{ latest_report.num_diff_vrps|default:0 }},
+            num_total_vrps: {{ latest_report.num_total_vrps|default:0 }},
+            num_roas: {{ latest_report.num_roas|default:0 }},
+            num_cas: {{ latest_report.num_cas|default:0 }},
+            num_objects: {{ latest_report.num_objects|default:0 }}
+        };
 
         // Function to create/update charts based on theme
         function updateChartsTheme() {
@@ -879,25 +956,28 @@
                 getComputedStyle(document.documentElement).getPropertyValue('--chart-color-3').trim(),
                 getComputedStyle(document.documentElement).getPropertyValue('--chart-color-4').trim()
             ];
+            const cardBgColor = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
 
             // Destroy existing charts if they exist
-            if (objectChart) objectChart.destroy();
+            if (vrpsChart) vrpsChart.destroy();
+            if (objectsChart) objectsChart.destroy();
             if (availabilityChart) availabilityChart.destroy();
 
-            // Object Chart
-            const ctx1 = document.getElementById('objectChart').getContext('2d');
-            objectChart = new Chart(ctx1, {
+            // VRPs Chart
+            const vrpsCtx = document.getElementById('vrpsChart').getContext('2d');
+            const otherVrps = initialChartData.num_total_vrps - (initialChartData.num_overlap_vrps + initialChartData.num_diff_vrps);
+            vrpsChart = new Chart(vrpsCtx, {
                 type: 'pie',
                 data: {
-                    labels: ['Valid', 'Inconsistent', 'Error'],
+                    labels: ['Overlapping VRPs', 'Differing VRPs', 'Other VRPs'],
                     datasets: [{
-                        data: [75, 15, 10], // Dummy data
+                        data: [initialChartData.num_overlap_vrps, initialChartData.num_diff_vrps, otherVrps],
                         backgroundColor: [
-                            chartColors[0], /* Operational (Green) */
-                            chartColors[1], /* Degraded (Yellow) */
-                            chartColors[2]  /* Outage (Red) */
+                            chartColors[0], /* Green */
+                            chartColors[1], /* Yellow */
+                            chartColors[3]  /* Blue */
                         ],
-                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(), // Border matches card background
+                        borderColor: cardBgColor,
                         borderWidth: 2,
                         hoverOffset: 4
                     }]
@@ -909,29 +989,31 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                color: chartTextColor // Update legend text color
+                                color: chartTextColor
                             }
                         },
                         title: {
-                            display: false, // Title is in the info-tile H2
+                            display: false,
                         }
                     }
                 }
             });
 
-            // Availability Chart
-            const ctx2 = document.getElementById('availabilityChart').getContext('2d');
-            availabilityChart = new Chart(ctx2, {
+            // Objects Chart
+            const objectsCtx = document.getElementById('objectsChart').getContext('2d');
+            const otherObjects = initialChartData.num_objects - (initialChartData.num_roas + initialChartData.num_cas);
+            objectsChart = new Chart(objectsCtx, {
                 type: 'pie',
                 data: {
-                    labels: ['Available', 'Unreachable'],
+                    labels: ['ROAs', 'CAs', 'Other Objects'],
                     datasets: [{
-                        data: [90, 10], // Dummy data
+                        data: [initialChartData.num_roas, initialChartData.num_cas, otherObjects],
                         backgroundColor: [
-                            chartColors[0],
-                            chartColors[2]
+                            chartColors[0], /* Green */
+                            chartColors[1], /* Yellow */
+                            chartColors[3]  /* Blue */
                         ],
-                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(), // Border matches card background
+                        borderColor: cardBgColor,
                         borderWidth: 2,
                         hoverOffset: 4
                     }]
@@ -943,7 +1025,46 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                color: chartTextColor // Update legend text color
+                                color: chartTextColor
+                            }
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+
+            // Availability Chart (keeping it as is for now, assuming Repository.reachable status)
+            // You might need to adjust the data for this based on your Repository model
+            const ctx2 = document.getElementById('availabilityChart').getContext('2d');
+            // This dummy data should be replaced with actual counts of reachable/unreachable repositories
+            const reachableCount = {{ repositories|length }} > 0 ? {{ repositories|first.reachable|yesno:"1,0" }} : 0; // Example: assuming first repo's reachability
+            const unreachableCount = {{ repositories|length }} - reachableCount;
+
+            availabilityChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Available', 'Unreachable'],
+                    datasets: [{
+                        data: [reachableCount > 0 ? 100 : 0, unreachableCount > 0 ? 100 : 0], // Dummy data - replace with actual counts
+                        backgroundColor: [
+                            chartColors[0],
+                            chartColors[2]
+                        ],
+                        borderColor: cardBgColor,
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: chartTextColor
                             }
                         },
                         title: {
@@ -954,29 +1075,56 @@
             });
         }
 
+        // Tab functionality
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+
+            // Re-render chart when tab becomes active to ensure it's drawn correctly
+            if (tabName === 'vrpsTab' && vrpsChart) {
+                vrpsChart.resize();
+            } else if (tabName === 'objectsTab' && objectsChart) {
+                objectsChart.resize();
+            }
+        }
+
 
         // --- Summary Tile Logic ---
         const loadingIcon = document.getElementById('loadingIcon');
         const lastUpdatedSpan = document.getElementById('lastUpdated');
         const totalObjectsSpan = document.getElementById('totalObjects');
-        const reposActiveSpan = document.getElementById('reposActive');
+        const maxRpExecTimeSpan = document.getElementById('maxRpExecTime');
+        const crawlerExecTimeSpan = document.getElementById('crawlerExecTime');
 
-        function updateLastUpdated() {
-            const now = new Date();
-            // Using toLocaleString with options for more flexible formatting
-            const options = {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false, // 24-hour format
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                timeZoneName: 'short' // e.g., CEST, CDT
-            };
-            // Format for Frankfurt, Hessen, Germany (CEST time zone)
-            const formattedDate = now.toLocaleString('en-US', { timeZone: 'Europe/Berlin', ...options });
-            lastUpdatedSpan.textContent = formattedDate;
+        function updateLastUpdated(timestamp) {
+            if (timestamp) {
+                const date = new Date(timestamp);
+                const options = {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    timeZoneName: 'short'
+                };
+                const formattedDate = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin', ...options });
+                lastUpdatedSpan.textContent = formattedDate;
+            } else {
+                lastUpdatedSpan.textContent = "N/A";
+            }
         }
 
         function toggleLoadingIcon(show) {
@@ -987,24 +1135,93 @@
             }
         }
 
-        // Dummy data update simulation
-        let totalObjects = 1234567;
-        let reposActive = 42;
-
-        function simulateDataUpdate() {
+        // This function will simulate fetching data from your Django backend
+        // In a real application, you would make an AJAX request to a Django view
+        async function fetchDashboardData() {
             toggleLoadingIcon(true); // Show loading icon
 
-            setTimeout(() => {
-                // Simulate fetching new data
-                totalObjects += Math.floor(Math.random() * 1000) + 100;
-                reposActive = Math.floor(Math.random() * 5) + 40; // Keeps it around 40-45
+            try {
+                // In a real Django setup, you'd fetch data from a URL like '/api/dashboard-data/'
+                // For demonstration, let's simulate a fetch
+                const response = await new Promise(resolve => setTimeout(() => {
+                    // This is dummy data, replace with actual data from your Django view
+                    const dummyData = {
+                        latest_report: {
+                            time_stamp: new Date().toISOString(), // Current time for demonstration
+                            num_objects: Math.floor(Math.random() * 1000000) + 1000000,
+                            max_rp_exec_time: Math.floor(Math.random() * 500) + 50,
+                            crawler_exec_time: Math.floor(Math.random() * 200) + 20,
+                            num_overlap_vrps: Math.floor(Math.random() * 1000) + 100,
+                            num_diff_vrps: Math.floor(Math.random() * 500) + 50,
+                            num_total_vrps: Math.floor(Math.random() * 2000) + 1500,
+                            num_roas: Math.floor(Math.random() * 500000) + 100000,
+                            num_cas: Math.floor(Math.random() * 100000) + 10000,
+                        },
+                        repositories: [
+                            { uri: "https://example.com/repo1", reachable: true, num_affected_vrps: 10 },
+                            { uri: "https://example.com/repo2", reachable: false, num_affected_vrps: 5 },
+                        ],
+                        inconsistencies: [
+                            { file_name: "file_a.cer", log_message: "Certificate expired" },
+                            { file_name: "file_b.roa", log_message: "Invalid signature" },
+                        ],
+                        error_messages: [
+                            { message: "Database connection lost", count: 3 },
+                            { message: "API rate limit exceeded", count: 1 },
+                        ],
+                        recent_logs: [
+                            "[2025-06-10 16:50:01] INFO: User 'Alice' logged in successfully.",
+                            "[2025-06-10 16:50:15] WARN: Disk space on '/dev/sda1' is 85% full.",
+                            "[2025-06-10 16:50:30] ERROR: Database connection failed. Retrying...",
+                        ]
+                    };
+                    resolve({ ok: true, json: () => Promise.resolve(dummyData) });
+                }, 1500));
 
-                totalObjectsSpan.textContent = totalObjects.toLocaleString('en-US'); // Format with commas
-                reposActiveSpan.textContent = reposActive.toLocaleString('en-US');
+                if (response.ok) {
+                    const data = await response.json();
 
-                updateLastUpdated(); // Update timestamp after data is "loaded"
+                    // Update summary tile
+                    totalObjectsSpan.textContent = data.latest_report.num_objects.toLocaleString('en-US');
+                    maxRpExecTimeSpan.textContent = data.latest_report.max_rp_exec_time.toLocaleString('en-US');
+                    crawlerExecTimeSpan.textContent = data.latest_report.crawler_exec_time.toLocaleString('en-US');
+                    updateLastUpdated(data.latest_report.time_stamp);
+
+                    // Update initialChartData for live chart updates
+                    initialChartData.num_overlap_vrps = data.latest_report.num_overlap_vrps;
+                    initialChartData.num_diff_vrps = data.latest_report.num_diff_vrps;
+                    initialChartData.num_total_vrps = data.latest_report.num_total_vrps;
+                    initialChartData.num_roas = data.latest_report.num_roas;
+                    initialChartData.num_cas = data.latest_report.num_cas;
+                    initialChartData.num_objects = data.latest_report.num_objects;
+
+                    // Update charts with new data
+                    updateChartsTheme();
+
+                    // Update recent logs (assuming you'd pass a list of log strings)
+                    const errorLogContainer = document.getElementById('errorLog');
+                    errorLogContainer.innerHTML = ''; // Clear existing logs
+                    data.recent_logs.forEach(log => {
+                        const logEntryDiv = document.createElement('div');
+                        logEntryDiv.classList.add('log-entry', log.includes('ERROR') ? 'error' : (log.includes('WARN') ? 'warn' : 'info'));
+                        logEntryDiv.textContent = log;
+                        errorLogContainer.appendChild(logEntryDiv);
+                    });
+
+                    // Update inconsistencies table (if data is provided for it)
+                    // You'll need to fetch and populate data for your new Inconsistency model
+                    // and ErrorMessage model here, similar to the logs.
+                    // For now, these parts are static based on your original template structure.
+
+                } else {
+                    console.error('Failed to fetch dashboard data:', response.statusText);
+                    // Optionally display an error message on the dashboard
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            } finally {
                 toggleLoadingIcon(false); // Hide loading icon
-            }, 1500); // Simulate 1.5 seconds loading time
+            }
         }
 
 
@@ -1016,13 +1233,13 @@
             } else {
                 setTheme(false); // Default to light if no preference or 'light'
             }
-            // Charts are now initialized/updated by setTheme
-            // Initial update for summary tile
-            updateLastUpdated(); // Set initial last updated time
-            simulateDataUpdate(); // Simulate first data load after initial page load
 
-            // Periodically simulate data updates for summary tile
-            setInterval(simulateDataUpdate, 10000); // Every 10 seconds
+            // Charts are now initialized/updated by setTheme
+            // Initial data load for summary tile and charts
+            fetchDashboardData();
+
+            // Periodically fetch and update data
+            setInterval(fetchDashboardData, 30000); // Every 30 seconds
         });
 
         // Toggle theme on button click
