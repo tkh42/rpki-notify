@@ -3,124 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>RPKI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <style>
-        /* CSS Variables for theming */
         :root {
             --bg-color: #f4f7f6;
             --text-color: #333;
+            --text-color-light: #666;
             --header-color: #2c3e50;
             --card-bg: #ffffff;
-            --card-shadow: rgba(0, 0, 0, 0.08);
-            --card-hover-shadow: rgba(0, 0, 0, 0.12);
-            --table-header-bg: #f8f8f8;
-            --table-border-color: #e0e0e0;
-            --table-even-row-bg: #fdfdfd;
-            --table-hover-bg: #f0f0f0;
-            --form-border-color: #ccc;
-            --form-focus-border: #3498db;
-            --form-focus-shadow: rgba(52, 152, 219, 0.2);
+            --card-shadow: rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: rgba(0, 0, 0, 0.1);
+            --border-color: #e0e0e0;
             --button-bg: #3498db;
             --button-hover-bg: #2980b9;
-            --error-color: #e74c3c;
-            --modal-overlay-bg: rgba(0,0,0,0.6);
-            --modal-shadow: rgba(0,0,0,0.3);
-            --close-button-color: #aaa;
-            --close-button-hover-color: #333;
             --navbar-bg: #ffffff;
             --navbar-text: #2c3e50;
-            --navbar-button-bg: #3498db;
-            --navbar-button-hover-bg: #2980b9;
             --icon-color: #555;
             --icon-hover-color: #3498db;
-            /* Chart colors (light mode) */
             --chart-color-1: #4CAF50;
             --chart-color-2: #FFC107;
             --chart-color-3: #F44336;
             --chart-color-4: #2196F3;
             --chart-text-color: #333;
-            /* Scrollbar colors (light mode) */
-            --scrollbar-thumb: #888;
+            --scrollbar-thumb: #ccc;
             --scrollbar-track: #f1f1f1;
+            --tooltip-bg: #333;
+            --tooltip-text: #fff;
         }
 
-        /* Dark Mode variables */
         body.dark-mode {
             --bg-color: #2c3e50;
             --text-color: #ecf0f1;
+            --text-color-light: #bdc3c7;
             --header-color: #ecf0f1;
             --card-bg: #34495e;
             --card-shadow: rgba(0, 0, 0, 0.2);
             --card-hover-shadow: rgba(0, 0, 0, 0.3);
-            --table-header-bg: #3b546d;
-            --table-border-color: #4a6a8a;
-            --table-even-row-bg: #3d5975;
-            --table-hover-bg: #4a6a8a;
-            --form-border-color: #555;
-            --form-focus-border: #8fd2f9;
-            --form-focus-shadow: rgba(143, 210, 249, 0.3);
-            --button-bg: #3498db;
-            --button-hover-bg: #2980b9;
-            --error-color: #e74c3c;
-            --modal-overlay-bg: rgba(0,0,0,0.8);
-            --modal-shadow: rgba(0,0,0,0.5);
-            --close-button-color: #ccc;
-            --close-button-hover-color: #eee;
+            --border-color: #4a6a8a;
             --navbar-bg: #2c3e50;
             --navbar-text: #ecf0f1;
-            --navbar-button-bg: #3498db;
-            --navbar-button-hover-bg: #2980b9;
             --icon-color: #ecf0f1;
             --icon-hover-color: #8fd2f9;
-            /* Chart colors (dark mode) */
-            --chart-color-1: #66BB6A; /* Lighter green */
-            --chart-color-2: #FFD54F; /* Lighter yellow */
-            --chart-color-3: #EF5350; /* Lighter red */
-            --chart-color-4: #64B5F6; /* Lighter blue */
+            --chart-color-1: #66BB6A;
+            --chart-color-2: #FFD54F;
+            --chart-color-3: #EF5350;
+            --chart-color-4: #64B5F6;
             --chart-text-color: #ecf0f1;
-            /* Scrollbar colors (dark mode) */
             --scrollbar-thumb: #555;
             --scrollbar-track: #3b546d;
+            --tooltip-bg: #ecf0f1;
+            --tooltip-text: #2c3e50;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
-            padding: 0; /* Remove body padding here, navbar handles it */
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Navbar Styles */
+        main {
+            padding: 20px;
+        }
+
+        /* Navbar */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
+            padding: 10px 30px;
             background-color: var(--navbar-bg);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 4px var(--card-shadow);
+            margin-bottom: 20px;
         }
 
         .navbar-title {
             font-size: 1.8em;
             font-weight: 700;
             color: var(--navbar-text);
-            flex-grow: 1; /* Allows title to take up available space */
         }
 
         .navbar-buttons {
             display: flex;
-            gap: 15px; /* Space between buttons */
+            gap: 15px;
             align-items: center;
         }
 
         .navbar-button {
-            background-color: var(--navbar-button-bg);
+            background-color: var(--button-bg);
             color: white;
             padding: 10px 20px;
             border: none;
@@ -128,583 +101,329 @@
             cursor: pointer;
             font-size: 0.95em;
             font-weight: 500;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            transition: background-color 0.2s ease;
         }
 
         .navbar-button:hover {
-            background-color: var(--navbar-button-hover-bg);
-            transform: translateY(-1px);
+            background-color: var(--button-hover-bg);
         }
 
-        .navbar-button:active {
-            transform: translateY(0);
-        }
-
-        /* Theme toggle button */
         .theme-toggle-button {
             background: none;
             border: none;
             cursor: pointer;
             padding: 5px;
-            display: flex; /* For SVG centering */
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%; /* Make it circular */
-            transition: background-color 0.2s ease;
-        }
-
-        .theme-toggle-button:hover {
-            background-color: rgba(128, 128, 128, 0.1); /* Subtle hover effect */
         }
 
         .theme-toggle-button svg {
             width: 24px;
             height: 24px;
-            fill: var(--icon-color); /* Use CSS variable for icon color */
+            fill: var(--icon-color);
             transition: fill 0.3s ease;
         }
-
         .theme-toggle-button:hover svg {
              fill: var(--icon-hover-color);
         }
 
-        /* Main content styling, now inside a main tag */
-        main {
-            padding: 0 20px; /* Add padding to main content */
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--header-color);
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-
-        /* New Summary Tile */
-        .summary-tile {
-            width: calc(100% - 40px); /* Adjust for main padding */
-            max-width: 100%; /* Ensure it takes full width */
-            margin: 0 auto 10px auto; /* Center and add bottom margin */
+        /* Top Summary Bar */
+        .summary-bar {
             display: flex;
-            justify-content: space-around; /* Distribute items */
+            justify-content: space-between;
             align-items: center;
             background-color: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 4px 12px var(--card-shadow);
-            padding: 15px; /* Slightly more padding */
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
-        }
-        .summary-tile:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px var(--card-hover-shadow);
-        }
-
-        .summary-tile h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            color: var(--header-color);
-            font-weight: 500;
-            font-size: 1.1em;
-            transition: color 0.3s ease;
-        }
-
-        .summary-tile p {
-            margin: 0;
-            font-size: 1.6em;
-            font-weight: 700;
-            color: var(--text-color);
-            transition: color 0.3s ease;
-        }
-
-        .summary-tile .summary-item {
-            text-align: center;
-            flex: 1; /* Allow items to grow */
-            min-width: 150px; /* Prevent shrinking too much */
-        }
-
-        .summary-tile .summary-item:not(:last-child) {
-            border-right: 1px solid var(--table-border-color); /* Separator */
-            padding-right: 20px;
-            margin-right: 20px;
-            transition: border-color 0.3s ease;
-        }
-
-        /* Loading icon */
-        .loading-status {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .loading-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loading-icon {
-            width: 100%;
-            height: 100%;
-            fill: var(--form-focus-border); /* Use a blue color, matching buttons */
-            animation: spin 1.5s linear infinite; /* Spin animation */
-            display: none; /* Hidden by default, shown by JS */
-            transition: fill 0.3s ease;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Specific styling for last updated text */
-        .last-updated {
-            font-size: 0.9em !important; /* Override default p font-size */
-            font-weight: 400 !important;
-            color: var(--text-color) !important;
-            margin-top: 5px;
-            transition: color 0.3s ease;
-        }
-
-
-        /* New Top Info Container */
-        .top-info-container {
-            display: flex;
+            padding: 15px 30px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            justify-content: space-around;
-            gap: 20px;
-            margin-bottom: 10px;
         }
 
-        .info-tile {
-            flex: 1;
-            min-width: 300px; /* Adjust as needed */
+        .summary-section {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .summary-section.right{
+             justify-content: flex-end;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-item h3 {
+            margin: 0 0 5px 0;
+            color: var(--text-color-light);
+            font-weight: 400;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .summary-item p {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        .summary-item.last-updated p {
+             font-size: 1em;
+             font-weight: 400;
+        }
+
+        /* Main Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-tile {
             background-color: var(--card-bg);
-            border-radius: 2px;
+            border-radius: 8px;
             box-shadow: 0 4px 12px var(--card-shadow);
             padding: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .grid-tile.full-width {
+            grid-column: 1 / -1;
         }
 
-        .info-tile:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px var(--card-hover-shadow);
-        }
-
-        .info-tile h2 {
+        .tile-title {
             color: var(--header-color);
             margin-top: 0;
             margin-bottom: 15px;
-            font-weight: 400;
-            border-bottom: 2px solid var(--table-border-color);
+            font-weight: 500;
+            font-size: 1.2em;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
-            text-align: center;
-            transition: color 0.3s ease, border-color 0.3s ease;
-        }
-
-        /* Chart specific styling */
-        .chart-container {
-            width: 100%;
-            max-width: 300px; /* Limit chart size */
-            margin: 0 auto;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 200px; /* Set a fixed height for the chart container */
         }
-
-        /* Tabs styling */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
+        
+        /* Tooltip for question mark */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+            cursor: help;
         }
-
-        .tab-button {
-            background-color: var(--table-header-bg);
-            color: var(--text-color);
-            border: 1px solid var(--table-border-color);
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        .tab-button:first-child {
-            border-top-left-radius: 6px;
-            border-bottom-left-radius: 6px;
-        }
-
-        .tab-button:last-child {
-            border-top-right-radius: 6px;
-            border-bottom-right-radius: 6px;
-        }
-
-        .tab-button.active {
-            background-color: var(--button-bg);
-            color: white;
-            border-color: var(--button-bg);
-        }
-
-        .tab-button:hover:not(.active) {
-            background-color: var(--table-hover-bg);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-
-        /* Error Log specific styling */
-        .error-log-container {
-            max-height: 300px; /* Set a max height for scrolling */
-            overflow-y: auto; /* Enable vertical scrolling */
-            border: 1px solid var(--table-border-color); /* Subtle border for log */
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            text-align: center;
             border-radius: 6px;
-            padding: 10px;
-            background-color: var(--card-bg); /* Match card background */
-            /* The fix for empty space */
-            white-space: normal; /* Reset this if inherited from font-size:0 context */
-            /* End fix */
-            color: var(--text-color);
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85em;
+            font-weight: 400;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .tooltip-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-color-light);
         }
 
-        /* Custom Scrollbar for Webkit browsers (Chrome, Safari) */
-        .error-log-container::-webkit-scrollbar {
-            width: 8px;
+        /* Charts */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            flex-grow: 1;
+            min-height: 250px;
         }
-
-        .error-log-container::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-            border-radius: 10px;
-        }
-
-        .error-log-container::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 10px;
-        }
-
-        .error-log-container::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Slightly darker on hover */
-        }
-
-
-        .log-entry {
-            margin-bottom: 2px; /* Adjusted to reduce space */
-            padding: 1px 0; /* Adjusted to reduce space */
-            border-bottom: 1px dashed rgba(0,0,0,0.1); /* Subtle separator */
-            transition: border-color 0.3s ease;
-
-            /* Re-apply font properties here */
-            font-family: monospace; /* Monospace font for logs */
-            font-size: 0.9em; /* Restore font size for log entries */
-            white-space: pre-wrap; /* Preserve whitespace and wrap text */
-            word-wrap: break-word; /* Break long words */
-            display: block; /* Ensure it behaves as a block element */
-        }
-        body.dark-mode .log-entry {
-            border-bottom: 1px dashed rgba(255,255,255,0.1);
-        }
-
-        .log-entry.error {
-            color: var(--error-color);
-            font-weight: bold;
-        }
-        .log-entry.warn {
-            color: #FFC107; /* Orange */
-        }
-        .log-entry.info {
-            color: #2196F3; /* Blue */
-        }
-
-
-        .container {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            justify-content: space-around; /* Distribute space evenly */
-            gap: 20px; /* Space between flex items */
-            margin-bottom: 30px;
-        }
-
+        
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
-
         th, td {
-            border: none; /* Remove individual cell borders */
-            border-bottom: 1px solid var(--table-border-color); /* Add bottom border for rows */
-            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px;
             text-align: left;
-            transition: border-color 0.3s ease;
-        }
-
-        th {
-            background-color: var(--table-header-bg); /* Lighter header background */
-            color: var(--text-color);
-            font-weight: 700;
-            text-transform: uppercase;
             font-size: 0.9em;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
-
-        tr:nth-child(even) {
-            background-color: var(--table-even-row-bg); /* Slightly different background for even rows */
+        th {
+            font-weight: 500;
+            color: var(--text-color-light);
         }
-
-        tr:hover {
-            background-color: var(--table-hover-bg); /* Highlight row on hover */
+        .table-container {
+             max-height: 300px;
+             overflow-y: auto;
+        }
+        
+        /* RP Logs */
+        .rp-logs-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .rp-log-tab {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .rp-log-tab.active {
+            background-color: var(--button-bg);
+            color: white;
+            border-color: var(--button-bg);
+            font-weight: 500;
+        }
+        .rp-log-tab:hover:not(.active) {
+            background-color: var(--bg-color);
+        }
+        .rp-log-content {
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .rp-log-content.active {
+            display: block;
+        }
+        .log-entry {
+            font-family: monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            padding: 2px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .show-all-logs-btn {
+            margin-top: 10px;
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            color: var(--button-bg);
+            padding: 8px 15px;
+            border-radius: 6px;
             cursor: pointer;
         }
 
-        /* Modal (Overlay) Styles */
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px;}
+
+        /* Modal */
         .modal-overlay {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: var(--modal-overlay-bg); /* Black w/ opacity */
-            display: flex; /* Use flexbox for centering */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
-            opacity: 0; /* Start with opacity 0 for fade-in effect */
-            visibility: hidden; /* Hide content from screen readers when not visible */
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
         }
-
         .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
+            display: flex;
         }
-
         .modal-content {
             background-color: var(--card-bg);
-            margin: auto; /* For older browsers/fallback, though flex handles it */
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 5px 15px var(--modal-shadow); /* Stronger shadow for pop-up */
-            position: relative; /* Needed for close button positioning */
-            width: 90%; /* Responsive width */
-            max-width: 550px; /* Maximum width */
-            animation: fadeInScale 0.3s ease-out; /* Animation for appearance */
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
         }
-
-        /* Animation for modal content */
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
         .close-button {
-            color: var(--close-button-color);
             position: absolute;
             top: 15px;
             right: 20px;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            transition: color 0.2s ease;
+            color: var(--text-color-light);
         }
-
-        .close-button:hover,
-        .close-button:focus {
-            color: var(--close-button-hover-color);
-            text-decoration: none;
-        }
-
-        .modal-content h2 {
-            text-align: center;
-            color: var(--header-color);
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-weight: 400;
-            transition: color 0.3s ease;
-        }
-
-        /* Form styles inside the modal (reusing existing styles) */
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: var(--text-color);
-            transition: color 0.3s ease;
         }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"] {
+        .form-group input {
             width: 100%;
             padding: 12px;
-            border: 1px solid var(--form-border-color);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             box-sizing: border-box;
-            font-size: 1em;
-            background-color: var(--card-bg); /* Ensure input background changes */
+            background-color: var(--bg-color);
             color: var(--text-color);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
         }
-
-        .form-group input[type="text"]:focus,
-        .form-group input[type="email"]:focus {
-            border-color: var(--form-focus-border);
-            box-shadow: 0 0 0 3px var(--form-focus-shadow);
-            outline: none;
-        }
-
-        .form-group button[type="submit"] { /* Target the submit button specifically */
+        .form-group button {
+            width: 100%;
+            padding: 12px;
             background-color: var(--button-bg);
             color: white;
-            padding: 12px 25px;
             border: none;
             border-radius: 6px;
-            cursor: pointer;
             font-size: 1.1em;
-            font-weight: 500;
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            cursor: pointer;
         }
-
-        .form-group button[type="submit"]:hover {
-            background-color: var(--button-hover-bg);
-            transform: translateY(-1px);
-        }
-
-        .form-group button[type="submit"]:active {
-            transform: translateY(0);
-        }
-
-        .errorlist {
-            color: var(--error-color);
-            list-style-type: none;
+        .form-group .errorlist {
+            color: var(--chart-color-3);
+            list-style: none;
             padding: 0;
-            margin-top: 5px;
             font-size: 0.9em;
+            margin-top: 5px;
         }
-
-        /* Responsive adjustments */
-        @media (max-width: 992px) {
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-tile[data-column="3"] {
+                grid-column: 1 / -1;
+            }
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            .summary-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
             .navbar {
-                padding: 15px 20px;
-            }
-            .navbar-title {
-                font-size: 1.5em;
-            }
-            .navbar-buttons {
+                flex-direction: column;
+                align-items: stretch;
                 gap: 10px;
             }
-            .navbar-button {
-                padding: 8px 15px;
-                font-size: 0.9em;
-            }
-            .theme-toggle-button svg {
-                width: 20px;
-                height: 20px;
-            }
-
-            .summary-tile {
-                flex-direction: column; /* Stack items vertically */
-                align-items: flex-start; /* Align text to left */
-                padding: 20px;
-                width: calc(100% - 40px); /* Adjust for main padding */
-            }
-            .summary-tile .summary-item {
-                width: 100%; /* Take full width when stacked */
-                text-align: left; /* Align text to left */
-                margin-bottom: 15px;
-                padding-bottom: 15px;
-            }
-            .summary-tile .summary-item:not(:last-child) {
-                border-right: none;
-                border-bottom: 1px solid var(--table-border-color); /* Bottom separator */
-                padding-right: 0;
-                margin-right: 0;
-            }
-
-            .top-info-container, .container {
-                flex-direction: column; /* Stack tiles vertically on medium screens */
-                align-items: center; /* Center items when stacked */
-            }
-
-            .info-tile {
-                width: 90%; /* Take up more width when stacked */
-                margin-bottom: 20px;
-            }
-            .error-log-container {
-                max-height: 200px; /* Adjust height for smaller screens */
-            }
         }
 
-        @media (max-width: 576px) {
-            main {
-                padding: 0 10px;
-            }
-            .navbar {
-                flex-direction: column; /* Stack navbar items vertically */
-                align-items: flex-start;
-                padding: 10px 15px;
-            }
-            .navbar-title {
-                margin-bottom: 10px;
-                font-size: 1.6em;
-            }
-            .navbar-buttons {
-                width: 100%;
-                justify-content: space-between; /* Spread buttons out */
-                gap: 5px;
-            }
-            .navbar-button {
-                flex-grow: 1; /* Allow buttons to expand */
-                font-size: 0.85em;
-                padding: 8px 10px;
-            }
-            .summary-tile {
-                padding: 15px;
-                width: calc(100% - 30px); /* Adjust for main padding */
-            }
-            .summary-tile .summary-item p {
-                font-size: 1.4em;
-            }
-            .info-tile {
-                width: 100%; /* Full width on small screens */
-                padding: 15px;
-            }
-            .modal-content {
-                padding: 20px; /* Reduce padding on small screens */
-            }
-            h1 {
-                font-size: 1.8em;
-            }
-        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-title">
-            rpki-notify
-        </div>
+        <div class="navbar-title">RPKI Dashboard</div>
         <div class="navbar-buttons">
             <button class="navbar-button" onclick="openRegistrationModal()">Notify me!</button>
             <button class="navbar-button">Feedback</button>
@@ -717,142 +436,184 @@
     </nav>
 
     <main>
-        <div class="summary-tile">
-            <div class="summary-item">
-                <h3>Total Objects</h3>
-                <p id="totalObjects">{{ latest_report.num_objects|default:"N/A" }}</p>
-            </div>
-            <div class="summary-item">
-                <h3>Max RP Exec Time (ms)</h3>
-                <p id="maxRpExecTime">{{ latest_report.max_rp_exec_time|default:"N/A" }}</p>
-            </div>
-            <div class="summary-item">
-                <h3>Crawler Exec Time (ms)</h3>
-                <p id="crawlerExecTime">{{ latest_report.crawler_exec_time|default:"N/A" }}</p>
-            </div>
-            <div class="summary-item loading-status">
-                <div class="loading-icon-wrapper">
-                    <svg id="loadingIcon" class="loading-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zM15 10a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm-6 0a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm8-1h-2v2h2V9zm-8 0H7v2h2V9zM12 4a1 1 0 1 0-1-1 1 1 0 0 0 1 1zm0 16a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"></path>
-                    </svg>
+        {% if latest_report %}
+        <div class="summary-bar">
+            <div class="summary-section">
+                <div class="summary-item">
+                    <h3>Total Objects</h3>
+                    <p>{{ latest_report.num_objects|default:"N/A" }}</p>
                 </div>
-                <p class="last-updated">Last Updated: <span id="lastUpdated">{{ latest_report.time_stamp|date:"Y-m-d H:i:s T"|default:"N/A" }}</span></p>
+                <div class="summary-item">
+                    <h3>ROAs</h3>
+                    <p>{{ latest_report.num_roas|default:"N/A" }}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>CAs</h3>
+                    <p>{{ latest_report.num_cas|default:"N/A" }}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>Ghostbusters</h3>
+                    <p>{{ ghostbusters_count|default:"N/A" }}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>Repositories</h3>
+                    <p>{{ num_repos|default:"N/A" }}</p>
+                </div>
+            </div>
+            <div class="summary-section">
+                <div class="summary-item">
+                    <h3>Max RP Exec Time (s)</h3>
+                    <p>{{ latest_report.max_rp_exec_time|default:"N/A" }}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>Crawler Exec Time (s)</h3>
+                    <p>{{ latest_report.crawler_exec_time|default:"N/A" }}</p>
+                </div>
+            </div>
+            <div class="summary-section right">
+                <div class="summary-item last-updated">
+                    <h3>Last Updated</h3>
+                    <p>{{ latest_report.time_stamp|date:"Y-m-d H:i:s T"|default:"N/A" }}</p>
+                </div>
             </div>
         </div>
 
-        <div class="top-info-container">
-            <div class="info-tile">
-                <h2>VRPs and Objects Overview</h2>
-                <div class="tabs">
-                    <button class="tab-button active" onclick="openTab(event, 'vrpsTab')">VRPs</button>
-                    <button class="tab-button" onclick="openTab(event, 'objectsTab')">Objects</button>
-                </div>
-                <div id="vrpsTab" class="tab-content active">
-                    <div class="chart-container">
-                        <canvas id="vrpsChart"></canvas>
+        <div class="dashboard-grid">
+            <div class="grid-tile" data-column="1">
+                <h2 class="tile-title">VRPs Overview
+                    <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">Breakdown of Validated ROA Payloads (VRPs).</span>
                     </div>
-                </div>
-                <div id="objectsTab" class="tab-content">
-                    <div class="chart-container">
-                        <canvas id="objectsChart"></canvas>
-                    </div>
+                </h2>
+                <div class="chart-container">
+                    <canvas id="vrpsChart"></canvas>
                 </div>
             </div>
-
-            <div class="info-tile">
-                <h2>Recent updates</h2>
-                <div class="error-log-container" id="errorLog">
-                    {% for log_entry in latest_report.logs.all %}
-                        <div class="log-entry info">{{ log_entry.log_entry }}</div>
-                    {% empty %}
-                        <div class="log-entry info">No recent logs available.</div>
+            <div class="grid-tile" data-column="1">
+                <h2 class="tile-title">Persistent Differences
+                     <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">VRPs that are consistently different across relying parties.</span>
+                    </div>
+                </h2>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Relying Party</th><th>VRP</th></tr></thead>
+                        <tbody>
+                        {% for item in differences %}
+                            <tr><td>{{ item.relying_party }}</td><td>{{ item.vrp }}</td></tr>
+                        {% empty %}
+                            <tr><td colspan="2">No differences found.</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-tile" data-column="1">
+                <h2 class="tile-title">Inconsistencies
+                     <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">Discrepancies found in RPKI objects.</span>
+                    </div>
+                </h2>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>File Name</th><th>Log Message</th></tr></thead>
+                        <tbody>
+                        {% for item in inconsistencies %}
+                            <tr><td>{{ item.file_name }}</td><td>{{ item.log_message }}</td></tr>
+                        {% empty %}
+                            <tr><td colspan="2">No inconsistencies found.</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid-tile full-width" data-column="2">
+                <h2 class="tile-title">Relying Party Logs
+                    <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">Logs from various relying party software implementations.</span>
+                    </div>
+                </h2>
+                <div class="rp-logs-tabs">
+                    {% for rp_name, logs in rp_logs_initial.items %}
+                        <button class="rp-log-tab {% if forloop.first %}active{% endif %}" data-rp="{{ rp_name }}">{{ rp_name }}</button>
                     {% endfor %}
                 </div>
+                {% for rp_name, logs in rp_logs_initial.items %}
+                    <div id="log-{{ rp_name|slugify }}" class="rp-log-content {% if forloop.first %}active{% endif %}">
+                        {% for log in logs %}
+                            <div class="log-entry">{{ log }}</div>
+                        {% endfor %}
+                        {% if rp_logs_counts|get_item:rp_name > 50 %}
+                        <button class="show-all-logs-btn" data-rp="{{ rp_name }}">Show complete logs ({{ rp_logs_counts|get_item:rp_name }} entries)</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
             </div>
 
-            <div class="info-tile">
-                <h2>Availability</h2>
+            <div class="grid-tile" data-column="2">
+                <h2 class="tile-title">Common Errors
+                     <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">Most frequent errors aggregated from relying parties.</span>
+                    </div>
+                </h2>
+                 <div class="table-container">
+                    <table>
+                        <thead><tr><th>Message</th><th>Count</th></tr></thead>
+                        <tbody>
+                        {% for error in error_messages %}
+                            <tr><td>{{ error.message }}</td><td>{{ error.count }}</td></tr>
+                        {% empty %}
+                            <tr><td colspan="2">No common errors found.</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid-tile" data-column="3">
+                <h2 class="tile-title">VRPs per Relying Party
+                    <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">Number of VRPs produced by each relying party software.</span>
+                    </div>
+                </h2>
                 <div class="chart-container">
+                    <canvas id="vrpsPerRpChart"></canvas>
+                </div>
+            </div>
+            <div class="grid-tile" data-column="3">
+                <h2 class="tile-title">Repository Reachability
+                    <div class="tooltip">
+                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+                        <span class="tooltiptext">Status of RPKI repositories.</span>
+                    </div>
+                </h2>
+                <div class="chart-container" style="max-height: 150px;">
                     <canvas id="availabilityChart"></canvas>
+                </div>
+                <div class="table-container">
+                     <table>
+                        <thead><tr><th>URI</th><th>Reachable</th><th>Affected VRPs</th></tr></thead>
+                        <tbody>
+                        {% for repo in repositories %}
+                            <tr><td>{{ repo.uri }}</td><td>{{ repo.reachable|yesno:"Yes,No" }}</td><td>{{ repo.num_affected_vrps }}</td></tr>
+                        {% empty %}
+                            <tr><td colspan="3">No repositories found.</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <div class="container">
-            <div class="info-tile">
-                <h2>Inconsistencies</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>File Name</th>
-                            <th>Log Message</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in inconsistencies %}
-                        <tr>
-                            <td>{{ item.file_name }}</td>
-                            <td>{{ item.log_message }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2">No inconsistencies found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="info-tile">
-                <h2>Errors</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Message</th>
-                            <th>Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for error_message in error_messages %}
-                        <tr>
-                            <td>{{ error_message.message }}</td>
-                            <td>{{ error_message.count }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2">No errors found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="info-tile">
-                <h2>Reachability</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>URI</th>
-                            <th>Reachable</th>
-                            <th>Affected VRPs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for repo in repositories %}
-                        <tr>
-                            <td>{{ repo.uri }}</td>
-                            <td>{{ repo.reachable|yesno:"Yes,No" }}</td>
-                            <td>{{ repo.num_affected_vrps }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3">No repositories found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {% else %}
+            <p>No report data available. Please run the update command.</p>
+        {% endif %}
     </main>
 
     <div id="registrationModal" class="modal-overlay">
@@ -864,24 +625,12 @@
                 <div class="form-group">
                     {{ form.name.label_tag }}
                     {{ form.name }}
-                    {% if form.name.errors %}
-                        <ul class="errorlist">
-                            {% for error in form.name.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+                    {{ form.name.errors }}
                 </div>
                 <div class="form-group">
                     {{ form.email.label_tag }}
                     {{ form.email }}
-                    {% if form.email.errors %}
-                        <ul class="errorlist">
-                            {% for error in form.email.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                            </ul>
-                    {% endif %}
+                    {{ form.email.errors }}
                 </div>
                 <div class="form-group">
                     <button type="submit">Register</button>
@@ -891,362 +640,145 @@
     </div>
 
     <script>
-        // --- Modal Logic (retained) ---
-        var modal = document.getElementById("registrationModal");
-
-        function openRegistrationModal() {
-            modal.classList.add("show");
-        }
-
-        function closeRegistrationModal() {
-            modal.classList.remove("show");
-        }
-
+        // --- Modal Logic ---
+        const modal = document.getElementById("registrationModal");
+        function openRegistrationModal() { modal.classList.add("show"); }
+        function closeRegistrationModal() { modal.classList.remove("show"); }
         window.onclick = function(event) {
-            if (event.target == modal) {
-                closeRegistrationModal();
-            }
+            if (event.target == modal) closeRegistrationModal();
         }
 
-        // --- Dark Mode Logic ---
+        // --- Theme Logic ---
         const themeToggleBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const body = document.body;
 
-        // Function to set the theme
         function setTheme(isDarkMode) {
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-                themeIcon.innerHTML = `
-                    <path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.14 7.14a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM3 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm3.086 5.561a.75.75 0 0 1-1.061 0l-1.06-1.061a.75.75 0 0 1 1.06-1.06l1.061 1.06a.75.75 0 0 1 0 1.061ZM12 18a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm5.561-3.086a.75.75 0 0 1 0 1.06l-1.061 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM21 12a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm-3.086-5.561a.75.75 0 0 1 1.061 0l1.06 1.061a.75.75 0 1 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.061ZM12 6a6 6 0 1 1 0 12A6 6 0 0 1 12 6Z" clip-rule="evenodd" fill-rule="evenodd" />
-                `; // Sun icon
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-mode');
-                themeIcon.innerHTML = `
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                `; // Moon icon
-                localStorage.setItem('theme', 'light');
-            }
-            // Update charts immediately on theme change
+            body.classList.toggle('dark-mode', isDarkMode);
+            themeIcon.innerHTML = isDarkMode 
+                ? `<path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.14 7.14a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM3 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm3.086 5.561a.75.75 0 0 1-1.061 0l-1.06-1.061a.75.75 0 0 1 1.06-1.06l1.061 1.06a.75.75 0 0 1 0 1.061ZM12 18a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm5.561-3.086a.75.75 0 0 1 0 1.06l-1.061 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM21 12a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm-3.086-5.561a.75.75 0 0 1 1.061 0l1.06 1.061a.75.75 0 1 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.061ZM12 6a6 6 0 1 1 0 12A6 6 0 0 1 12 6Z" clip-rule="evenodd" fill-rule="evenodd" />`
+                : `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
             updateChartsTheme();
         }
+        
+        // --- RP Log Tabs ---
+        const logTabsContainer = document.querySelector('.rp-logs-tabs');
+        if(logTabsContainer) {
+            logTabsContainer.addEventListener('click', e => {
+                if (e.target.classList.contains('rp-log-tab')) {
+                    document.querySelectorAll('.rp-log-tab').forEach(tab => tab.classList.remove('active'));
+                    e.target.classList.add('active');
 
-        // Chart instances (global so we can update them)
-        let vrpsChart, objectsChart, availabilityChart;
+                    document.querySelectorAll('.rp-log-content').forEach(content => content.classList.remove('active'));
+                    document.getElementById(`log-${e.target.dataset.rp.replace(/[^a-zA-Z0-9]/g, '-')}`).classList.add('active');
+                }
+            });
+        }
+        
+        document.querySelectorAll('.show-all-logs-btn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                const rpName = e.target.dataset.rp;
+                const logContentDiv = e.target.parentElement;
+                e.target.textContent = 'Loading...';
+                e.target.disabled = true;
+                
+                const response = await fetch(`/api/get_all_rp_logs/${rpName}/`);
+                if(response.ok) {
+                    const data = await response.json();
+                    logContentDiv.innerHTML = data.logs.map(log => `<div class="log-entry">${log}</div>`).join('');
+                } else {
+                    e.target.textContent = 'Error loading logs.';
+                }
+            });
+        });
 
-        // Dummy data for charts - replace with actual data from Django context
-        // These values should be passed from your Django view to the template
-        const initialChartData = {
+        // --- Charts ---
+        let vrpsChart, availabilityChart, vrpsPerRpChart;
+        const chartData = {
             num_overlap_vrps: {{ latest_report.num_overlap_vrps|default:0 }},
             num_diff_vrps: {{ latest_report.num_diff_vrps|default:0 }},
             num_total_vrps: {{ latest_report.num_total_vrps|default:0 }},
-            num_roas: {{ latest_report.num_roas|default:0 }},
-            num_cas: {{ latest_report.num_cas|default:0 }},
-            num_objects: {{ latest_report.num_objects|default:0 }}
+            reachable_repos: {{ reachable_repos_count|default:0 }},
+            unreachable_repos: {{ unreachable_repos_count|default:0 }},
+            vrps_per_rp: JSON.parse('{{ vrps_per_rp|safe }}'.replaceAll("'", '"'))
         };
-
-        // Function to create/update charts based on theme
+        
         function updateChartsTheme() {
-            // Get colors dynamically from CSS variables
             const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color').trim();
-            const chartColors = [
-                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-1').trim(),
-                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-2').trim(),
-                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-3').trim(),
-                getComputedStyle(document.documentElement).getPropertyValue('--chart-color-4').trim()
-            ];
+            const chartColors = {
+                green: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-1').trim(),
+                yellow: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-2').trim(),
+                red: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-3').trim(),
+                blue: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-4').trim()
+            };
             const cardBgColor = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
 
-            // Destroy existing charts if they exist
             if (vrpsChart) vrpsChart.destroy();
-            if (objectsChart) objectsChart.destroy();
             if (availabilityChart) availabilityChart.destroy();
-
-            // VRPs Chart
-            const vrpsCtx = document.getElementById('vrpsChart').getContext('2d');
-            const otherVrps = initialChartData.num_total_vrps - (initialChartData.num_overlap_vrps + initialChartData.num_diff_vrps);
-            vrpsChart = new Chart(vrpsCtx, {
+            if (vrpsPerRpChart) vrpsPerRpChart.destroy();
+            
+            {% if latest_report %}
+            // VRPs Overview Chart
+            const otherVrps = chartData.num_total_vrps - (chartData.num_overlap_vrps + chartData.num_diff_vrps);
+            vrpsChart = new Chart(document.getElementById('vrpsChart').getContext('2d'), {
                 type: 'pie',
                 data: {
-                    labels: ['Overlapping VRPs', 'Differing VRPs', 'Other VRPs'],
+                    labels: ['Overlapping', 'Differing', 'Consistent'],
                     datasets: [{
-                        data: [initialChartData.num_overlap_vrps, initialChartData.num_diff_vrps, otherVrps],
-                        backgroundColor: [
-                            chartColors[0], /* Green */
-                            chartColors[1], /* Yellow */
-                            chartColors[3]  /* Blue */
-                        ],
+                        data: [chartData.num_overlap_vrps, chartData.num_diff_vrps, otherVrps],
+                        backgroundColor: [chartColors.yellow, chartColors.red, chartColors.green],
                         borderColor: cardBgColor,
-                        borderWidth: 2,
-                        hoverOffset: 4
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: chartTextColor
-                            }
-                        },
-                        title: {
-                            display: false,
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: chartTextColor } } } }
             });
 
-            // Objects Chart
-            const objectsCtx = document.getElementById('objectsChart').getContext('2d');
-            const otherObjects = initialChartData.num_objects - (initialChartData.num_roas + initialChartData.num_cas);
-            objectsChart = new Chart(objectsCtx, {
-                type: 'pie',
+            // Availability Chart
+            availabilityChart = new Chart(document.getElementById('availabilityChart').getContext('2d'), {
+                type: 'doughnut',
                 data: {
-                    labels: ['ROAs', 'CAs', 'Other Objects'],
+                    labels: ['Reachable', 'Unreachable'],
                     datasets: [{
-                        data: [initialChartData.num_roas, initialChartData.num_cas, otherObjects],
-                        backgroundColor: [
-                            chartColors[0], /* Green */
-                            chartColors[1], /* Yellow */
-                            chartColors[3]  /* Blue */
-                        ],
+                        data: [chartData.reachable_repos, chartData.unreachable_repos],
+                        backgroundColor: [chartColors.green, chartColors.red],
                         borderColor: cardBgColor,
-                        borderWidth: 2,
-                        hoverOffset: 4
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: chartTextColor
-                            }
-                        },
-                        title: {
-                            display: false,
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: chartTextColor } } } }
             });
 
-            // Availability Chart (keeping it as is for now, assuming Repository.reachable status)
-            // You might need to adjust the data for this based on your Repository model
-            const ctx2 = document.getElementById('availabilityChart').getContext('2d');
-            // This dummy data should be replaced with actual counts of reachable/unreachable repositories
-            const reachableCount = {{ repositories|length }} > 0 ? {{ repositories|first.reachable|yesno:"1,0" }} : 0; // Example: assuming first repo's reachability
-            const unreachableCount = {{ repositories|length }} - reachableCount;
-
-            availabilityChart = new Chart(ctx2, {
-                type: 'pie',
+            // VRPs per RP Chart
+            vrpsPerRpChart = new Chart(document.getElementById('vrpsPerRpChart').getContext('2d'), {
+                type: 'bar',
                 data: {
-                    labels: ['Available', 'Unreachable'],
+                    labels: chartData.vrps_per_rp.map(item => item.name),
                     datasets: [{
-                        data: [reachableCount > 0 ? 100 : 0, unreachableCount > 0 ? 100 : 0], // Dummy data - replace with actual counts
-                        backgroundColor: [
-                            chartColors[0],
-                            chartColors[2]
-                        ],
-                        borderColor: cardBgColor,
-                        borderWidth: 2,
-                        hoverOffset: 4
+                        label: 'VRPs',
+                        data: chartData.vrps_per_rp.map(item => item.num_vrps),
+                        backgroundColor: chartColors.blue,
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: chartTextColor
-                            }
-                        },
-                        title: {
-                            display: false,
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { y: { ticks: { color: chartTextColor }}, x: { ticks: { color: chartTextColor }}}, plugins: { legend: { display: false } } }
             });
+            {% endif %}
         }
 
-        // Tab functionality
-        function openTab(evt, tabName) {
-            var i, tabcontent, tabbuttons;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove("active");
-            }
-            tabbuttons = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tabbuttons.length; i++) {
-                tabbuttons[i].classList.remove("active");
-            }
-            document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-
-            // Re-render chart when tab becomes active to ensure it's drawn correctly
-            if (tabName === 'vrpsTab' && vrpsChart) {
-                vrpsChart.resize();
-            } else if (tabName === 'objectsTab' && objectsChart) {
-                objectsChart.resize();
-            }
-        }
-
-
-        // --- Summary Tile Logic ---
-        const loadingIcon = document.getElementById('loadingIcon');
-        const lastUpdatedSpan = document.getElementById('lastUpdated');
-        const totalObjectsSpan = document.getElementById('totalObjects');
-        const maxRpExecTimeSpan = document.getElementById('maxRpExecTime');
-        const crawlerExecTimeSpan = document.getElementById('crawlerExecTime');
-
-        function updateLastUpdated(timestamp) {
-            if (timestamp) {
-                const date = new Date(timestamp);
-                const options = {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false,
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    timeZoneName: 'short'
-                };
-                const formattedDate = date.toLocaleString('en-US', { timeZone: 'Europe/Berlin', ...options });
-                lastUpdatedSpan.textContent = formattedDate;
-            } else {
-                lastUpdatedSpan.textContent = "N/A";
-            }
-        }
-
-        function toggleLoadingIcon(show) {
-            if (show) {
-                loadingIcon.style.display = 'block';
-            } else {
-                loadingIcon.style.display = 'none';
-            }
-        }
-
-        // This function will simulate fetching data from your Django backend
-        // In a real application, you would make an AJAX request to a Django view
-        async function fetchDashboardData() {
-            toggleLoadingIcon(true); // Show loading icon
-
-            try {
-                // In a real Django setup, you'd fetch data from a URL like '/api/dashboard-data/'
-                // For demonstration, let's simulate a fetch
-                const response = await new Promise(resolve => setTimeout(() => {
-                    // This is dummy data, replace with actual data from your Django view
-                    const dummyData = {
-                        latest_report: {
-                            time_stamp: new Date().toISOString(), // Current time for demonstration
-                            num_objects: Math.floor(Math.random() * 1000000) + 1000000,
-                            max_rp_exec_time: Math.floor(Math.random() * 500) + 50,
-                            crawler_exec_time: Math.floor(Math.random() * 200) + 20,
-                            num_overlap_vrps: Math.floor(Math.random() * 1000) + 100,
-                            num_diff_vrps: Math.floor(Math.random() * 500) + 50,
-                            num_total_vrps: Math.floor(Math.random() * 2000) + 1500,
-                            num_roas: Math.floor(Math.random() * 500000) + 100000,
-                            num_cas: Math.floor(Math.random() * 100000) + 10000,
-                        },
-                        repositories: [
-                            { uri: "https://example.com/repo1", reachable: true, num_affected_vrps: 10 },
-                            { uri: "https://example.com/repo2", reachable: false, num_affected_vrps: 5 },
-                        ],
-                        inconsistencies: [
-                            { file_name: "file_a.cer", log_message: "Certificate expired" },
-                            { file_name: "file_b.roa", log_message: "Invalid signature" },
-                        ],
-                        error_messages: [
-                            { message: "Database connection lost", count: 3 },
-                            { message: "API rate limit exceeded", count: 1 },
-                        ],
-                        recent_logs: [
-                            "[2025-06-10 16:50:01] INFO: User 'Alice' logged in successfully.",
-                            "[2025-06-10 16:50:15] WARN: Disk space on '/dev/sda1' is 85% full.",
-                            "[2025-06-10 16:50:30] ERROR: Database connection failed. Retrying...",
-                        ]
-                    };
-                    resolve({ ok: true, json: () => Promise.resolve(dummyData) });
-                }, 1500));
-
-                if (response.ok) {
-                    const data = await response.json();
-
-                    // Update summary tile
-                    totalObjectsSpan.textContent = data.latest_report.num_objects.toLocaleString('en-US');
-                    maxRpExecTimeSpan.textContent = data.latest_report.max_rp_exec_time.toLocaleString('en-US');
-                    crawlerExecTimeSpan.textContent = data.latest_report.crawler_exec_time.toLocaleString('en-US');
-                    updateLastUpdated(data.latest_report.time_stamp);
-
-                    // Update initialChartData for live chart updates
-                    initialChartData.num_overlap_vrps = data.latest_report.num_overlap_vrps;
-                    initialChartData.num_diff_vrps = data.latest_report.num_diff_vrps;
-                    initialChartData.num_total_vrps = data.latest_report.num_total_vrps;
-                    initialChartData.num_roas = data.latest_report.num_roas;
-                    initialChartData.num_cas = data.latest_report.num_cas;
-                    initialChartData.num_objects = data.latest_report.num_objects;
-
-                    // Update charts with new data
-                    updateChartsTheme();
-
-                    // Update recent logs (assuming you'd pass a list of log strings)
-                    const errorLogContainer = document.getElementById('errorLog');
-                    errorLogContainer.innerHTML = ''; // Clear existing logs
-                    data.recent_logs.forEach(log => {
-                        const logEntryDiv = document.createElement('div');
-                        logEntryDiv.classList.add('log-entry', log.includes('ERROR') ? 'error' : (log.includes('WARN') ? 'warn' : 'info'));
-                        logEntryDiv.textContent = log;
-                        errorLogContainer.appendChild(logEntryDiv);
-                    });
-
-                    // Update inconsistencies table (if data is provided for it)
-                    // You'll need to fetch and populate data for your new Inconsistency model
-                    // and ErrorMessage model here, similar to the logs.
-                    // For now, these parts are static based on your original template structure.
-
-                } else {
-                    console.error('Failed to fetch dashboard data:', response.statusText);
-                    // Optionally display an error message on the dashboard
-                }
-            } catch (error) {
-                console.error('Error fetching dashboard data:', error);
-            } finally {
-                toggleLoadingIcon(false); // Hide loading icon
-            }
-        }
-
-
-        // --- Initial Load Logic ---
+        // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                setTheme(true);
-            } else {
-                setTheme(false); // Default to light if no preference or 'light'
-            }
+            setTheme(savedTheme === 'dark');
 
-            // Charts are now initialized/updated by setTheme
-            // Initial data load for summary tile and charts
-            fetchDashboardData();
-
-            // Periodically fetch and update data
-            setInterval(fetchDashboardData, 30000); // Every 30 seconds
+            // Handle potential form errors on page load after submission failed
+            {% if form.errors %}
+            openRegistrationModal();
+            {% endif %}
         });
 
-        // Toggle theme on button click
         themeToggleBtn.addEventListener('click', () => {
             setTheme(!body.classList.contains('dark-mode'));
         });
     </script>
-
 </body>
 </html>
+

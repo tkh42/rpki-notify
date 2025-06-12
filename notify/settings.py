@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-qv!%=+xdm3qdu0xfh--ej#n8!koq)1_6z1v9!r_2g+0o9x%8@k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False 
 
-ALLOWED_HOSTS = ["217.154.228.27"]
+ALLOWED_HOSTS = ["217.154.228.27", "rpki-notify.site", "localhost", "127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = ['https://rpki-notify.site', 'https://www.rpki-notify.site']
+
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / 'static'
@@ -39,8 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'backend',  # Your app for handling inconsistencies, errors, reachabilities, and registrations
-    'rest_framework',  # Django REST Framework for API support
+    'backend',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'notify.urls'
 
@@ -66,6 +69,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            'builtins': [
+                'backend.templatetags.custom_filters',
             ],
         },
     },
@@ -127,11 +133,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'your_smtp_host'  # e.g., 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your_email@example.com'
-EMAIL_HOST_PASSWORD = '?C*F4v299t]>zqs'
-DEFAULT_FROM_EMAIL = 'your_email@example.com'
+# Email settings for user verification
+# Replace with your actual SMTP server details
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Prints email to console for testing
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'your_smtp_host'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your_email@example.com'
+# EMAIL_HOST_PASSWORD = 'your_email_password'
+# DEFAULT_FROM_EMAIL = 'webmaster@localhost'
+

@@ -4,7 +4,7 @@ import glob
 import json
 
 from django.core.management.base import BaseCommand
-from backend.models import Report, RelyingParty, ErrorMessage, Repository, LogMessage, RelyingPartyLog
+from backend.models import Report, RelyingParty, ErrorMessage, Repository, LogMessage, RelyingPartyLog, Inconsistency, Difference, GhostbusterRecord
 
 DATA_FOLDER = "/home/update/data"
 
