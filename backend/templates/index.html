@@ -50,7 +50,7 @@
             --chart-color-2: #FFD54F;
             --chart-color-3: #EF5350;
             --chart-color-4: #64B5F6;
-            --chart-text-color: #ecf0f1;
+            --chart-text-color: white;
             --scrollbar-thumb: #555;
             --scrollbar-track: #3b546d;
             --tooltip-bg: #ecf0f1;
@@ -122,7 +122,7 @@
             transition: fill 0.3s ease;
         }
         .theme-toggle-button:hover svg {
-             fill: var(--icon-hover-color);
+            fill: var(--icon-hover-color);
         }
 
         /* Top Summary Bar */
@@ -144,7 +144,7 @@
             align-items: center;
         }
         .summary-section.right{
-             justify-content: flex-end;
+            justify-content: flex-end;
         }
 
         .summary-item {
@@ -166,8 +166,8 @@
             color: var(--text-color);
         }
         .summary-item.last-updated p {
-             font-size: 1em;
-             font-weight: 400;
+            font-size: 1em;
+            font-weight: 400;
         }
 
         /* Main Grid Layout */
@@ -175,6 +175,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
+            align-items: start; /* Align tiles to the top of their cell */
         }
 
         .grid-tile {
@@ -184,9 +185,7 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-        }
-        .grid-tile.full-width {
-            grid-column: 1 / -1;
+	    height: 32vh;
         }
 
         .tile-title {
@@ -218,8 +217,8 @@
             padding: 8px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
-            left: 50%;
+            top:125%;
+	    left: 50%;
             margin-left: -110px;
             opacity: 0;
             transition: opacity 0.3s;
@@ -230,18 +229,13 @@
             visibility: visible;
             opacity: 1;
         }
-        .tooltip-icon {
-            width: 16px;
-            height: 16px;
-            fill: var(--text-color-light);
-        }
 
         /* Charts */
         .chart-container {
             position: relative;
             width: 100%;
             flex-grow: 1;
-            min-height: 250px;
+            min-height: 200px;
         }
         
         /* Tables */
@@ -260,18 +254,18 @@
             color: var(--text-color-light);
         }
         .table-container {
-             max-height: 300px;
-             overflow-y: auto;
+            max-height: 300px;
+            overflow-y: auto;
         }
         
-        /* RP Logs */
-        .rp-logs-tabs {
+        /* Generic Tab Styles */
+        .tabs-container {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
             margin-bottom: 15px;
         }
-        .rp-log-tab {
+        .tab-button {
             background-color: transparent;
             color: var(--text-color);
             border: 1px solid var(--border-color);
@@ -281,23 +275,25 @@
             font-size: 0.9em;
             transition: background-color 0.2s, color 0.2s, border-color 0.2s;
         }
-        .rp-log-tab.active {
+        .tab-button.active {
             background-color: var(--button-bg);
             color: white;
             border-color: var(--button-bg);
             font-weight: 500;
         }
-        .rp-log-tab:hover:not(.active) {
+        .tab-button:hover:not(.active) {
             background-color: var(--bg-color);
         }
-        .rp-log-content {
-            display: none;
-            max-height: 400px;
-            overflow-y: auto;
+        .content-wrapper {
+            position: relative;
         }
-        .rp-log-content.active {
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
             display: block;
         }
+
         .log-entry {
             font-family: monospace;
             font-size: 0.85em;
@@ -305,6 +301,9 @@
             word-break: break-all;
             padding: 2px 0;
             border-bottom: 1px solid var(--border-color);
+        }
+        .rp-log-content {
+            overflow-y: auto;
         }
         .show-all-logs-btn {
             margin-top: 10px;
@@ -315,6 +314,29 @@
             border-radius: 6px;
             cursor: pointer;
         }
+
+        /* VRP Summary Tile */
+        .vrp-summary-container h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text-color-light);
+        }
+        .vrp-stats {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .vrp-stats li {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.95em;
+        }
+
+	a {
+		color: var(--text-color-light);
+	}
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -394,9 +416,6 @@
             .dashboard-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .grid-tile[data-column="3"] {
-                grid-column: 1 / -1;
-            }
         }
         @media (max-width: 768px) {
             .dashboard-grid {
@@ -418,7 +437,21 @@
                 gap: 10px;
             }
         }
-
+	.question-mark {
+    	    content: '?';
+    	    font-size: 60%;
+    	    font-family: sans-serif;
+    	    vertical-align: middle;
+	    font-weight: bold;
+	    text-align: center;
+	    display: inline-block;
+	    width: 1.8ex;
+	    height: 1.8ex;
+	    border-radius: 1ex;
+	    color: blue;
+	    background: white;
+	    border: thin solid blue;
+	}
     </style>
 </head>
 <body>
@@ -426,8 +459,7 @@
         <div class="navbar-title">RPKI Dashboard</div>
         <div class="navbar-buttons">
             <button class="navbar-button" onclick="openRegistrationModal()">Notify me!</button>
-            <button class="navbar-button">Feedback</button>
-            <button class="theme-toggle-button" id="themeToggle">
+	    <button class="theme-toggle-button" id="themeToggle">
                 <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
@@ -462,11 +494,11 @@
             </div>
             <div class="summary-section">
                 <div class="summary-item">
-                    <h3>Max RP Exec Time (s)</h3>
+                    <h3>Max RP Execution Time (in seconds)</h3>
                     <p>{{ latest_report.max_rp_exec_time|default:"N/A" }}</p>
                 </div>
                 <div class="summary-item">
-                    <h3>Crawler Exec Time (s)</h3>
+                    <h3>Crawler Execution Time (in seconds)</h3>
                     <p>{{ latest_report.crawler_exec_time|default:"N/A" }}</p>
                 </div>
             </div>
@@ -479,90 +511,108 @@
         </div>
 
         <div class="dashboard-grid">
-            <div class="grid-tile" data-column="1">
-                <h2 class="tile-title">VRPs Overview
+            <div class="grid-tile">
+                <h2 class="tile-title">VRPs Summary
                     <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
-                        <span class="tooltiptext">Breakdown of Validated ROA Payloads (VRPs).</span>
+                        
+			<a class="question-mark">?</a>
+			<span class="tooltiptext">Metrics on the VRPs created by the different relying parties.</span>
                     </div>
-                </h2>
-                <div class="chart-container">
-                    <canvas id="vrpsChart"></canvas>
+		</h2>
+                <div class="vrp-summary-container" style="overflow: scroll;">
+                    <h4>Overall Breakdown</h4>
+                    <ul class="vrp-stats">
+                        <li><strong>Total Unique VRPs:</strong> <span>{{ latest_report.num_total_vrps|default:"N/A" }}</span></li>
+                        <li><strong>VRPs not included by any RP:</strong> <span id="consistentVrpsCount">N/A</span></li>
+                        <li><strong>VRPs included by all RPs:</strong> <span>{{ latest_report.num_overlap_vrps|default:"N/A" }}</span></li>
+                        <li><strong>VRPs included by some RPs:</strong> <span>{{ latest_report.num_diff_vrps|default:"N/A" }}</span></li>
+                    </ul>
+                    <hr style="border-top: 1px solid var(--border-color); border-bottom: none; margin: 15px 0;">
+                    <h4>VRPs per Relying Party</h4>
+                    <div class="table-container" style="max-height: 220px;">
+                        <table>
+                            <thead><tr><th>Relying Party</th><th>VRP Count</th></tr></thead>
+                            <tbody>
+                                {# Note: Assumes `vrps_by_rp` is passed in context, e.g., `zip(rp_names, vrps_per_rp)` #}
+                                {% for rp_name, vrp_count in vrps_by_rp %}
+                                <tr><td>{{ rp_name }}</td><td>{{ vrp_count }}</td></tr>
+                                {% empty %}
+                                <tr><td colspan="2">No data available.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div class="grid-tile" data-column="1">
-                <h2 class="tile-title">Persistent Differences
-                     <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
-                        <span class="tooltiptext">VRPs that are consistently different across relying parties.</span>
-                    </div>
-                </h2>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>Relying Party</th><th>VRP</th></tr></thead>
-                        <tbody>
-                        {% for item in differences %}
-                            <tr><td>{{ item.relying_party }}</td><td>{{ item.vrp }}</td></tr>
-                        {% empty %}
-                            <tr><td colspan="2">No differences found.</td></tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-tile" data-column="1">
-                <h2 class="tile-title">Inconsistencies
-                     <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
-                        <span class="tooltiptext">Discrepancies found in RPKI objects.</span>
-                    </div>
-                </h2>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>File Name</th><th>Log Message</th></tr></thead>
-                        <tbody>
-                        {% for item in inconsistencies %}
-                            <tr><td>{{ item.file_name }}</td><td>{{ item.log_message }}</td></tr>
-                        {% empty %}
-                            <tr><td colspan="2">No inconsistencies found.</td></tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="grid-tile full-width" data-column="2">
+
+            <div class="grid-tile" style="overflow:scroll">
                 <h2 class="tile-title">Relying Party Logs
                     <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
+			<a class="question-mark">?</a>
                         <span class="tooltiptext">Logs from various relying party software implementations.</span>
                     </div>
                 </h2>
-                <div class="rp-logs-tabs">
+                <div class="tabs-container rp-logs-tabs">
                     {% for rp_name, logs in rp_logs_initial.items %}
-                        <button class="rp-log-tab {% if forloop.first %}active{% endif %}" data-rp="{{ rp_name }}">{{ rp_name }}</button>
+                        <button class="tab-button rp-log-tab" data-rp="{{ rp_name }}">{{ rp_name }}</button>
                     {% endfor %}
                 </div>
-                {% for rp_name, logs in rp_logs_initial.items %}
-                    <div id="log-{{ rp_name|slugify }}" class="rp-log-content {% if forloop.first %}active{% endif %}">
-                        {% for log in logs %}
-                            <div class="log-entry">{{ log }}</div>
-                        {% endfor %}
-                        {% if rp_logs_counts|get_item:rp_name > 50 %}
-                        <button class="show-all-logs-btn" data-rp="{{ rp_name }}">Show complete logs ({{ rp_logs_counts|get_item:rp_name }} entries)</button>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                <div class="content-wrapper">
+                    {% for rp_name, logs in rp_logs_initial.items %}
+                        <div id="log-content-{{ rp_name|slugify }}" class="tab-content rp-log-content">
+                            {% for log in logs %}
+                                <div class="log-entry">{{ log }}</div>
+                            {% endfor %}
+                            {% if rp_logs_counts|get_item:rp_name > 50 %}
+                            <button class="show-all-logs-btn" data-rp="{{ rp_name }}">Show complete logs ({{ rp_logs_counts|get_item:rp_name }} entries)</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
 
-            <div class="grid-tile" data-column="2">
-                <h2 class="tile-title">Common Errors
-                     <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
-                        <span class="tooltiptext">Most frequent errors aggregated from relying parties.</span>
+            <div class="grid-tile">
+                <h2 class="tile-title">Repository Reachability
+                    <div class="tooltip">
+			<a class="question-mark">?</a>
+                        <span class="tooltiptext">Status of RPKI repositories.</span>
                     </div>
                 </h2>
-                 <div class="table-container">
+                <div class="chart-container" style="max-height: 200px; width: 80%; margin: auto;">
+                    <canvas id="availabilityChart"></canvas>
+                </div>
+            </div>
+
+	    <div class="grid-tile">
+                 <h2 class="tile-title">Analysis
+                    <div class="tooltip">
+                        <a class="question-mark">?</a>
+                        <span class="tooltiptext">View persistent VRP differences or object inconsistencies.</span>
+                    </div>
+                </h2>
+		<div class="table-container" style="overflow:scroll">
+		    <table style="overflow:scroll">
+			    <thead><tr><th>File Name</th><th>Log Message</th><th>Number of impacted VRPs</th></tr></thead>
+			<tbody>
+			{% for item in inconsistencies %}
+			<tr><td>{{ item.file_name }}</td><td>{{ item.log_message }}</td><td>{{ item.num_impacted_vrps }}</td></tr>
+			{% empty %}
+			    <tr><td colspan="2">No inconsistencies found.</td></tr>
+			{% endfor %}
+			</tbody>
+		    </table>
+		</div>
+            </div>
+            
+
+            <div class="grid-tile">
+                <h2 class="tile-title">Common Errors
+                    <div class="tooltip">
+			    <a class="question-mark">?</a>
+			<span class="tooltiptext">Most frequent errors aggregated from relying parties.</span>
+                    </div>
+                </h2>
+                <div class="table-container">
                     <table>
                         <thead><tr><th>Message</th><th>Count</th></tr></thead>
                         <tbody>
@@ -576,33 +626,20 @@
                 </div>
             </div>
 
-            <div class="grid-tile" data-column="3">
-                <h2 class="tile-title">VRPs per Relying Party
+
+            <div class="grid-tile">
+                <h2 class="tile-title">Repository Status Details
                     <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
-                        <span class="tooltiptext">Number of VRPs produced by each relying party software.</span>
+			    <a class="question-mark">?</a>
+			<span class="tooltiptext">List of repositories, their reachability status, and the number of VRPs they affect.</span>
                     </div>
                 </h2>
-                <div class="chart-container">
-                    <canvas id="vrpsPerRpChart"></canvas>
-                </div>
-            </div>
-            <div class="grid-tile" data-column="3">
-                <h2 class="tile-title">Repository Reachability
-                    <div class="tooltip">
-                        <svg class="tooltip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7.5 9.5a.5.5 0 0 1 .5-.5h.001a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5zM7 5.495a1 1 0 1 1 2 0v.01a1 1 0 1 1-2 0v-.01z"/></svg>
-                        <span class="tooltiptext">Status of RPKI repositories.</span>
-                    </div>
-                </h2>
-                <div class="chart-container" style="max-height: 150px;">
-                    <canvas id="availabilityChart"></canvas>
-                </div>
                 <div class="table-container">
-                     <table>
-                        <thead><tr><th>URI</th><th>Reachable</th><th>Affected VRPs</th></tr></thead>
+                    <table>
+                        <thead><tr><th>URI</th><th>Reachable</th><th>Contained VRPs</th></tr></thead>
                         <tbody>
                         {% for repo in repositories %}
-                            <tr><td>{{ repo.uri }}</td><td>{{ repo.reachable|yesno:"Yes,No" }}</td><td>{{ repo.num_affected_vrps }}</td></tr>
+                            <tr><td>{{ repo.uri }}</td><td>{{ repo.reachable|yesno:"✅,❌" }}</td><td>{{ repo.contained_vrps }}</td></tr>
                         {% empty %}
                             <tr><td colspan="3">No repositories found.</td></tr>
                         {% endfor %}
@@ -610,6 +647,21 @@
                     </table>
                 </div>
             </div>
+	    <div class="grid-tile">
+	    	<h2 class="tile-title">Code and Data</h2>
+		<p> 
+		Download the manually created test cases for RP implementations as well as the repository crawler:</p> 
+		<div>
+			<a class="navbar-button" href="static/crawler_and_tests.zip">Download test cases</a>
+		</div>
+		<p>
+		The source code for our automated RFC analysis tooling can be downloaded and explored in browser: 
+		</p>
+		<div style="align-items: space-between">
+			<a class="navbar-button" href="static/rfc-tool.zip">Download code</a> 
+			<a class="navbar-button" href="static/rfc-analysis">Explore in browser</a>.
+	    	</div>
+	    </div>
         </div>
         {% else %}
             <p>No report data available. Please run the update command.</p>
@@ -623,9 +675,9 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    {{ form.name.label_tag }}
-                    {{ form.name }}
-                    {{ form.name.errors }}
+                    {{ form.repository_uri.label_tag }}
+                    {{ form.repository_uri }}
+                    {{ form.repository_uri.errors }}
                 </div>
                 <div class="form-group">
                     {{ form.email.label_tag }}
@@ -659,21 +711,45 @@
                 ? `<path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.14 7.14a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM3 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm3.086 5.561a.75.75 0 0 1-1.061 0l-1.06-1.061a.75.75 0 0 1 1.06-1.06l1.061 1.06a.75.75 0 0 1 0 1.061ZM12 18a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm5.561-3.086a.75.75 0 0 1 0 1.06l-1.061 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM21 12a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75Zm-3.086-5.561a.75.75 0 0 1 1.061 0l1.06 1.061a.75.75 0 1 1-1.06 1.06l-1.061-1.06a.75.75 0 0 1 0-1.061ZM12 6a6 6 0 1 1 0 12A6 6 0 0 1 12 6Z" clip-rule="evenodd" fill-rule="evenodd" />`
                 : `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            updateChartsTheme();
+            updateChartsTheme(isDarkMode ? "white" : "black");
         }
         
-        // --- RP Log Tabs ---
-        const logTabsContainer = document.querySelector('.rp-logs-tabs');
-        if(logTabsContainer) {
-            logTabsContainer.addEventListener('click', e => {
-                if (e.target.classList.contains('rp-log-tab')) {
-                    document.querySelectorAll('.rp-log-tab').forEach(tab => tab.classList.remove('active'));
-                    e.target.classList.add('active');
+        function setupScopedTabs(containerSelector, tabButtonSelector, contentClass, contentIdPrefix) {
+            const container = document.querySelector(containerSelector);
+            if (!container) return;
 
-                    document.querySelectorAll('.rp-log-content').forEach(content => content.classList.remove('active'));
-                    document.getElementById(`log-${e.target.dataset.rp.replace(/[^a-zA-Z0-9]/g, '-')}`).classList.add('active');
+            const parentTile = container.closest('.grid-tile');
+            if (!parentTile) return;
+
+            container.addEventListener('click', e => {
+                const clickedTab = e.target.closest(tabButtonSelector);
+                if (!clickedTab) return;
+
+                // Deactivate all tabs within this specific container
+                container.querySelectorAll(tabButtonSelector).forEach(tab => tab.classList.remove('active'));
+                clickedTab.classList.add('active');
+
+                // Get the unique identifier from the data attribute
+                const tabId = clickedTab.dataset.tab || clickedTab.dataset.rp;
+                
+                // Deactivate all content sections within this tile
+                parentTile.querySelectorAll(`.${contentClass}`).forEach(content => content.classList.remove('active'));
+
+                // Construct the target content ID
+                const safeTabId = tabId.replace(/[^a-zA-Z0-9-_]/g, '-');
+                const contentElementId = `${contentIdPrefix}${safeTabId}`;
+                const activeContent = parentTile.querySelector(`#${contentElementId}`);
+
+                if (activeContent) {
+                    activeContent.classList.add('active');
                 }
             });
+            
+            // Activate the first tab by default
+            const firstTab = container.querySelector(tabButtonSelector);
+            if (firstTab) {
+                firstTab.click();
+            }
         }
         
         document.querySelectorAll('.show-all-logs-btn').forEach(btn => {
@@ -694,81 +770,70 @@
         });
 
         // --- Charts ---
-        let vrpsChart, availabilityChart, vrpsPerRpChart;
+        let availabilityChart;
         const chartData = {
             num_overlap_vrps: {{ latest_report.num_overlap_vrps|default:0 }},
             num_diff_vrps: {{ latest_report.num_diff_vrps|default:0 }},
             num_total_vrps: {{ latest_report.num_total_vrps|default:0 }},
             reachable_repos: {{ reachable_repos_count|default:0 }},
             unreachable_repos: {{ unreachable_repos_count|default:0 }},
-	    rp_names: {{ rp_names|safe }},
-            vrps_per_rp: {{ vrps_per_rp|safe }}
-	};
+        };
         
-        function updateChartsTheme() {
-            const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color').trim();
+        function updateChartsTheme(chartTextColor) {
             const chartColors = {
                 green: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-1').trim(),
-                yellow: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-2').trim(),
                 red: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-3').trim(),
-                blue: getComputedStyle(document.documentElement).getPropertyValue('--chart-color-4').trim()
             };
             const cardBgColor = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
 
-            if (vrpsChart) vrpsChart.destroy();
             if (availabilityChart) availabilityChart.destroy();
-            if (vrpsPerRpChart) vrpsPerRpChart.destroy();
-            
             {% if latest_report %}
-            // VRPs Overview Chart
-            const otherVrps = chartData.num_total_vrps - (chartData.num_overlap_vrps + chartData.num_diff_vrps);
-            vrpsChart = new Chart(document.getElementById('vrpsChart').getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: ['Overlapping', 'Differing', 'Consistent'],
-                    datasets: [{
-                        data: [chartData.num_overlap_vrps, chartData.num_diff_vrps, otherVrps],
-                        backgroundColor: [chartColors.yellow, chartColors.red, chartColors.green],
-                        borderColor: cardBgColor,
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: chartTextColor } } } }
-            });
-
             // Availability Chart
-            availabilityChart = new Chart(document.getElementById('availabilityChart').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Reachable', 'Unreachable'],
-                    datasets: [{
-                        data: [chartData.reachable_repos, chartData.unreachable_repos],
-                        backgroundColor: [chartColors.green, chartColors.red],
-                        borderColor: cardBgColor,
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: chartTextColor } } } }
-            });
-
-            // VRPs per RP Chart
-            vrpsPerRpChart = new Chart(document.getElementById('vrpsPerRpChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: chartData.rp_names,
-                    datasets: [{
-                        label: 'VRPs',
-                        data: chartData.vrps_per_rp,
-                        backgroundColor: chartColors.blue,
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { y: { ticks: { color: chartTextColor }}, x: { ticks: { color: chartTextColor }}}, plugins: { legend: { display: false } } }
-            });
+            const availabilityCtx = document.getElementById('availabilityChart');
+            if(availabilityCtx) {
+                availabilityChart = new Chart(availabilityCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Reachable', 'Unreachable'],
+                        datasets: [{
+                            data: [chartData.reachable_repos, chartData.unreachable_repos],
+                            backgroundColor: [chartColors.green, chartColors.red],
+                            borderColor: cardBgColor,
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { 
+                                position: 'bottom', 
+                                labels: { color: chartTextColor, font: { size: 12 } }
+                            } 
+                        } 
+                    }
+                });
+            }
             {% endif %}
         }
-
+        
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme');
             setTheme(savedTheme === 'dark');
+
+            // Setup independent, scoped tabs
+            setupScopedTabs('#analysisTabs', '.tab-button', 'tab-content', 'analysis-content-');
+            setupScopedTabs('.rp-logs-tabs', '.rp-log-tab', 'rp-log-content', 'log-content-');
+
+            {% if latest_report %}
+            // Calculate and display consistent VRPs count
+            const consistentVrps = chartData.num_total_vrps - (chartData.num_overlap_vrps + chartData.num_diff_vrps);
+            const consistentVrpsEl = document.getElementById('consistentVrpsCount');
+            if (consistentVrpsEl) {
+                consistentVrpsEl.textContent = consistentVrps >= 0 ? consistentVrps.toLocaleString() : 'N/A';
+            }
+            {% endif %}
 
             // Handle potential form errors on page load after submission failed
             {% if form.errors %}
@@ -782,4 +847,3 @@
     </script>
 </body>
 </html>
-

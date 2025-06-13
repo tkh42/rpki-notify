@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qv!%=+xdm3qdu0xfh--ej#n8!koq)1_6z1v9!r_2g+0o9x%8@k'
+SECRET_KEY = 'qv!%=+xdm3qdu0xfh--ej#n8!koq)1_6z1v9!r_2g+0o9x%8@k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False 
@@ -29,9 +28,8 @@ ALLOWED_HOSTS = ["217.154.228.27", "rpki-notify.site", "localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ['https://rpki-notify.site', 'https://www.rpki-notify.site']
 
 
+STATIC_ROOT = "/var/www/rpki-notify/static"
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / 'static'
-
 # Application definition
 
 INSTALLED_APPS = [

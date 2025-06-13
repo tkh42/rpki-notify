@@ -59,9 +59,10 @@ def index(request):
         context.update({
             'inconsistencies': latest_report.inconsistencies.all(),
             'error_messages': common_errors,
-            'repositories': latest_report.repositories.all(),
-            'rp_names': list(latest_report.relying_parties.all().values_list("name", flat=True)),
-            'vrps_per_rp': list(latest_report.relying_parties.all().values_list("num_vrps", flat=True)),
+            'repositories': latest_report.repositories.order_by('-contained_vrps'),
+            'rp_names': [],
+            'vrps_per_rp': [],
+            'vrps_by_rp': list(zip(list(latest_report.relying_parties.all().values_list("name", flat=True)), list(latest_report.relying_parties.all().values_list("num_vrps", flat=True)))),
             'rp_logs_initial': rp_logs_initial,
             'rp_logs_counts': {rp.name: rp.rp_logs.count() for rp in latest_report.relying_parties.all()},
             'ghostbusters_count': latest_report.ghostbusters.count(),

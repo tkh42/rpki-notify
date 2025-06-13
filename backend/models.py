@@ -35,6 +35,7 @@ class Repository(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="repositories", null=True)
     uri = models.URLField()
     reachable = models.BooleanField()
+    contained_vrps = models.IntegerField()
     num_affected_vrps = models.IntegerField()
 
     class Meta:
@@ -62,6 +63,7 @@ class Inconsistency(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="inconsistencies")
     file_name = models.CharField(max_length=100)
     log_message = models.TextField()
+    num_impacted_vrps = models.IntegerField()
 
     class Meta:
         verbose_name_plural = "Inconsistencies"

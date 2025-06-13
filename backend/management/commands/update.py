@@ -52,7 +52,7 @@ class Command(BaseCommand):
             for log_entry in log_msg[1].split("\n"):
                 RelyingPartyLog.objects.create(
                     relying_party=rp,
-                    log_entry=log_msg[1]
+                    log_entry=log_entry
                 )
 
         for rp_name, error_msg_list in report["aggregated_errors"]:
@@ -72,8 +72,9 @@ class Command(BaseCommand):
         for repo in report["reachable_repos"]:
             Repository.objects.create(
                 report=report_obj,
-                uri=repo,
+                uri=repo[0],
                 reachable=True,
+                contained_vrps=repo[1],
                 num_affected_vrps=0
             )
 
@@ -82,6 +83,7 @@ class Command(BaseCommand):
                 report=report_obj,
                 uri=repo,
                 reachable=False,
+                contained_vrps=report["unreachable_repos"][repo][0],
                 num_affected_vrps=report["unreachable_repos"][repo][0]
             )
 
@@ -108,7 +110,8 @@ class Command(BaseCommand):
             Inconsistency.objects.create(
                     report=report_obj,
                     file_name=inconsistency[0],
-                    log_message=inconsistency[1]
+                    log_message=inconsistency[1],
+                    num_impacted_vrps=inconsistency[2]
             )
 
         for difference in report["persistent_diffs"]:
